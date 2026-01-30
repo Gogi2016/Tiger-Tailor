@@ -1,0 +1,66 @@
+{
+  "name": "Fabric",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Fabric name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier"
+    },
+    "composition": {
+      "type": "string",
+      "description": "Material composition"
+    },
+    "weight_gsm": {
+      "type": "number",
+      "description": "Weight in grams per square meter"
+    },
+    "texture": {
+      "type": "string",
+      "description": "Texture description"
+    },
+    "breathability": {
+      "type": "string",
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ],
+      "description": "Breathability level"
+    },
+    "care": {
+      "type": "string",
+      "description": "Care instructions"
+    },
+    "price_tier": {
+      "type": "string",
+      "enum": [
+        "standard",
+        "premium",
+        "luxury"
+      ],
+      "description": "Price tier"
+    },
+    "season": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Suitable seasons"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Fabric images"
+    }
+  },
+  "required": [
+    "name",
+    "slug"
+  ]
+}

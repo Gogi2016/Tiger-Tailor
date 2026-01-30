@@ -1,0 +1,59 @@
+{
+  "name": "Tailor",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Tailor's full name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier"
+    },
+    "portrait": {
+      "type": "string",
+      "description": "Portrait image URL"
+    },
+    "years_experience": {
+      "type": "number",
+      "description": "Years of tailoring experience"
+    },
+    "style_focus": {
+      "type": "string",
+      "description": "Primary style specialty"
+    },
+    "specialties": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of specialties"
+    },
+    "approach": {
+      "type": "string",
+      "description": "Tailoring philosophy and approach"
+    },
+    "best_suited_for": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Client types best suited for this tailor"
+    },
+    "samples": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Sample work image URLs"
+    },
+    "lead_time_days": {
+      "type": "number",
+      "description": "Typical lead time in days"
+    }
+  },
+  "required": [
+    "name",
+    "slug"
+  ]
+}

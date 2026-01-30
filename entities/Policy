@@ -1,0 +1,26 @@
+{
+  "name": "Policy",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Policy name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier"
+    },
+    "body": {
+      "type": "string",
+      "description": "Policy content in rich text/markdown"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order"
+    }
+  },
+  "required": [
+    "name",
+    "slug"
+  ]
+}

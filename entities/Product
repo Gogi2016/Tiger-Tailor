@@ -1,0 +1,57 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Product name"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly identifier"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "suit",
+        "shirt",
+        "coat",
+        "shoes",
+        "accessory"
+      ],
+      "description": "Product type"
+    },
+    "options": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Available options/customizations"
+    },
+    "base_price": {
+      "type": "number",
+      "description": "Starting price"
+    },
+    "images": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Product images"
+    },
+    "description": {
+      "type": "string",
+      "description": "Product description"
+    },
+    "featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Featured on homepage"
+    }
+  },
+  "required": [
+    "name",
+    "slug",
+    "type"
+  ]
+}
