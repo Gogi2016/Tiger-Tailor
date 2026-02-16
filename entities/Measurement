@@ -1,0 +1,68 @@
+{
+  "name": "Measurement",
+  "type": "object",
+  "properties": {
+    "chest": {
+      "type": "number",
+      "description": "Chest circumference in cm"
+    },
+    "waist": {
+      "type": "number",
+      "description": "Waist circumference in cm"
+    },
+    "hips": {
+      "type": "number",
+      "description": "Hip circumference in cm"
+    },
+    "shoulder_width": {
+      "type": "number",
+      "description": "Shoulder width in cm"
+    },
+    "sleeve_length": {
+      "type": "number",
+      "description": "Sleeve length in cm"
+    },
+    "jacket_length": {
+      "type": "number",
+      "description": "Jacket length in cm"
+    },
+    "neck": {
+      "type": "number",
+      "description": "Neck circumference in cm"
+    },
+    "inseam": {
+      "type": "number",
+      "description": "Inseam length in cm"
+    },
+    "outseam": {
+      "type": "number",
+      "description": "Outseam length in cm"
+    },
+    "thigh": {
+      "type": "number",
+      "description": "Thigh circumference in cm"
+    },
+    "height": {
+      "type": "number",
+      "description": "Height in cm"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Weight in kg"
+    },
+    "posture_notes": {
+      "type": "string",
+      "description": "Notes about posture or fit preferences"
+    },
+    "is_primary": {
+      "type": "boolean",
+      "default": true,
+      "description": "Primary measurement set"
+    }
+  },
+  "required": [
+    "chest",
+    "waist",
+    "height"
+  ]
+}

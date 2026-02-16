@@ -1,0 +1,95 @@
+{
+  "name": "Cart",
+  "type": "object",
+  "properties": {
+    "product_id": {
+      "type": "string",
+      "description": "Reference to Product entity"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "product_type": {
+      "type": "string"
+    },
+    "base_price": {
+      "type": "number"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "customizations": {
+      "type": "object",
+      "properties": {
+        "fabric": {
+          "type": "string"
+        },
+        "tailor": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        }
+      }
+    },
+    "measurements": {
+      "type": "object",
+      "properties": {
+        "chest": {
+          "type": "number"
+        },
+        "waist": {
+          "type": "number"
+        },
+        "hips": {
+          "type": "number"
+        },
+        "shoulder_width": {
+          "type": "number"
+        },
+        "sleeve_length": {
+          "type": "number"
+        },
+        "jacket_length": {
+          "type": "number"
+        },
+        "neck": {
+          "type": "number"
+        },
+        "inseam": {
+          "type": "number"
+        },
+        "outseam": {
+          "type": "number"
+        },
+        "thigh": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        },
+        "weight": {
+          "type": "number"
+        },
+        "posture_notes": {
+          "type": "string"
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "cart",
+        "ordered",
+        "completed"
+      ],
+      "default": "cart"
+    }
+  },
+  "required": [
+    "product_id",
+    "product_name",
+    "base_price"
+  ]
+}
