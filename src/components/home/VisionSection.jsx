@@ -61,11 +61,12 @@ export default function VisionSection() {
             Join thousands who've discovered the difference bespoke tailoring makes.
           </p>
           <a
-            href="#"
-            className="inline-flex px-8 py-4 bg-[#0E2A47] text-[#F5F1E8] text-sm tracking-wide hover:bg-[#0E2A47]/90 transition-colors"
+            href="/contact"
+            className="px-8 py-4 bg-[#F5F1E8] text-[#0E2A47] text-sm tracking-wide hover:bg-white transition-colors min-w-[200px]"
           >
             Book Your Consultation
           </a>
+
         </motion.div>
       </div>
     </section>

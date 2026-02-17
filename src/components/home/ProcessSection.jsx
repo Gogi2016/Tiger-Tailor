@@ -95,22 +95,48 @@ export default function ProcessSection() {
             </div>
 
             {/* Right - Image */}
-            <div className="relative hidden lg:block">
-              <div className="sticky top-32">
-                <motion.div 
-                  className="aspect-[4/5] overflow-hidden"
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
-                  viewport={{ once: true }}
-                >
-                  <img
-                    src="https://images.unsplash.com/photo-1611937663571-5c8e5e3e8b6a?w=800&h=1000&fit=crop"
-                    alt="Tailoring process"
-                    className="w-full h-full object-cover"
-                  />
-                </motion.div>
-              </div>
-            </div>
+           <div className="relative hidden lg:block">
+  <div className="sticky top-32">
+    <motion.div 
+      className="aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl"
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+    >
+      {/* Background Image */}
+      <div className="relative w-full h-full">
+        <img
+          src="https://c8.alamy.com/comp/2J9F2M4/colorful-tailoring-infographic-concept-with-taking-measurement-process-and-professional-equipment-tools-accessories-vector-illustration-2J9F2M4.jpg"
+          alt="Tailoring process"
+          className="w-full h-full object-cover scale-105"
+        />
+
+        {/* Dark luxury overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/55 to-black/70" />
+
+        {/* Glass overlay card */}
+        <div className="absolute inset-0 flex flex-col justify-end p-8">
+          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-6 shadow-xl">
+            <p className="text-xs tracking-[0.3em] uppercase text-white/70 mb-2">
+              The Craft
+            </p>
+            <h3 className="text-2xl font-serif text-white mb-3">
+              Precision in Every Detail
+            </h3>
+            <p className="text-sm text-white/80 leading-relaxed">
+              From first consultation to final delivery, each garment is shaped
+              through expert craftsmanship, premium fabrics, and meticulous
+              attention to fit and form.
+            </p>
+          </div>
+        </div>
+
+        {/* Elegant border glow */}
+        <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-white/10" />
+      </div>
+    </motion.div>
+  </div>
+</div>
           </div>
         </div>
       </div>

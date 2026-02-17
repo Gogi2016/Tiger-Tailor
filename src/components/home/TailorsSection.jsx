@@ -17,7 +17,7 @@ const tailors = [
     samples: [
       "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=400&fit=crop",
       "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1594938374182-a57061f06d7a?w=400&h=400&fit=crop"
+      "https://tse1.mm.bing.net/th/id/OIP.PowMOIMjPsLKD-707RNBLgHaI4?pid=Api&P=0&h=220"
     ]
   },
   {

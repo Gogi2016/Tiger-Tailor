@@ -2,18 +2,30 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ShoppingCart } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 const navLinks = [
-  { label: 'Philosophy', href: '#philosophy' },
-  { label: 'Products', href: '#products' },
-  { label: 'Tailors', href: '#tailors' },
-  { label: 'Process', href: '#process' },
+  { label: 'Home', href: createPageUrl('Home') },
+  { label: 'Products', href: createPageUrl('Products') },
+  { label: 'Contact', href: createPageUrl('Contact') },
 ];
 
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  
+  const { data: cartItems = [] } = useQuery({
+    queryKey: ['Cart'],
+    queryFn: async () => {
+      try {
+        return await base44.entities.Cart.filter({ status: 'CSart' });
+      } catch {
+        return [];
+      }
+    },
+  });
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,15 +35,8 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = (e, href) => {
-    if (href.startsWith('#')) {
-      e.preventDefault();
-      const element = document.querySelector(href);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-      setIsMobileMenuOpen(false);
-    }
+  const handleNavClick = () => {
+    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -55,25 +60,30 @@ export default function Header() {
 
             <nav className="hidden md:flex items-center gap-10">
               {navLinks.map((link) => (
-                <a
+                <Link
                   key={link.label}
-                  href={link.href}
-                  onClick={(e) => handleNavClick(e, link.href)}
+                  to={link.href}
                   className="text-sm tracking-wide text-[#2B2B2B]/80 hover:text-[#0E2A47] transition-colors relative group"
                 >
                   {link.label}
                   <span className="absolute left-0 -bottom-1 w-0 h-px bg-[#A88D4B] group-hover:w-full transition-all duration-300" />
-                </a>
+                </Link>
               ))}
             </nav>
 
             <div className="flex items-center gap-4">
               <Link
-                to={createPageUrl('Contact')}
-                className="hidden md:inline-flex px-6 py-2.5 bg-[#0E2A47] text-[#F5F1E8] text-sm tracking-wide hover:bg-[#0E2A47]/90 transition-colors"
+                to={createPageUrl('Cart')}
+                className="relative p-2 text-[#0E2A47] hover:text-[#A88D4B] transition-colors"
               >
-                Book Consultation
+                <ShoppingCart className="w-5 h-5" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#A88D4B] text-white text-xs flex items-center justify-center rounded-full">
+                    {cartItems.length}
+                  </span>
+                )}
               </Link>
+
               
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
@@ -109,17 +119,15 @@ export default function Header() {
               
               <nav className="flex flex-col gap-6">
                 {navLinks.map((link, index) => (
-                  <motion.a
-                    key={link.label}
-                    href={link.href}
-                    onClick={(e) => handleNavClick(e, link.href)}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="font-serif text-3xl text-[#0E2A47]"
-                  >
-                    {link.label}
-                  </motion.a>
+                  <motion.div key={link.label}>
+                    <Link
+                      to={link.href}
+                      onClick={handleNavClick}
+                      className="font-serif text-3xl text-[#0E2A47] block"
+                    >
+                      {link.label}
+                    </Link>
+                  </motion.div>
                 ))}
               </nav>
               

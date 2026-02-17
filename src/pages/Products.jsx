@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import ProductCard from '@/components/ui/ProductCard';
 
+// Local product data
 const allProducts = [
   {
     id: 1,
@@ -102,13 +103,16 @@ const categories = [
 export default function Products() {
   const [activeCategory, setActiveCategory] = useState('all');
 
-  const filteredProducts = activeCategory === 'all' 
-    ? allProducts 
+  // Filter products based on active category
+  const filteredProducts = activeCategory === 'all'
+    ? allProducts
     : allProducts.filter(p => p.type === activeCategory);
 
   return (
     <div className="pt-24 md:pt-32 pb-16 md:pb-24 bg-[#F5F1E8] min-h-screen">
       <div className="max-w-[1200px] mx-auto px-6">
+
+        {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -127,14 +131,14 @@ export default function Products() {
           </p>
         </motion.div>
 
-        {/* Filters */}
+        {/* Category Filters */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           className="flex flex-wrap justify-center gap-2 mb-12"
         >
-          {categories.map((cat) => (
+          {categories.map(cat => (
             <Button
               key={cat.value}
               variant={activeCategory === cat.value ? "default" : "outline"}
@@ -152,13 +156,13 @@ export default function Products() {
         </motion.div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {filteredProducts.map((product, index) => (
-            <ProductCard key={product.id} product={product} index={index} />
-          ))}
-        </div>
-
-        {filteredProducts.length === 0 && (
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {filteredProducts.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} />
+            ))}
+          </div>
+        ) : (
           <div className="text-center py-16">
             <p className="text-[#2B2B2B]/60">No products found in this category.</p>
           </div>

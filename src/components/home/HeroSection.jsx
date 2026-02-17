@@ -67,12 +67,6 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.9 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <Link
-            to={createPageUrl('Contact')}
-            className="px-8 py-4 bg-[#F5F1E8] text-[#0E2A47] text-sm tracking-wide hover:bg-white transition-colors min-w-[200px]"
-          >
-            Book Consultation
-          </Link>
           <a
             href="#philosophy"
             className="px-8 py-4 border border-[#F5F1E8]/50 text-[#F5F1E8] text-sm tracking-wide hover:bg-[#F5F1E8]/10 transition-colors min-w-[200px]"

@@ -55,6 +55,8 @@ import Terms from './pages/Terms';
 import Shipping from './pages/Shipping';
 import Returns from './pages/Returns';
 import __Layout from './Layout.jsx';
+import Cart from './pages/Cart';
+import ProductDetail from './pages/ProductDetail';
 
 
 export const PAGES = {
@@ -65,6 +67,8 @@ export const PAGES = {
     "Terms": Terms,
     "Shipping": Shipping,
     "Returns": Returns,
+    "Cart": Cart,
+    "ProductDetail": ProductDetail,
 }
 
 export const pagesConfig = {

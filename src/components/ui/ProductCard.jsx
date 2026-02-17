@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 
 export default function ProductCard({ product, index = 0 }) {
+  const navigate = useNavigate();
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
@@ -11,13 +14,19 @@ export default function ProductCard({ product, index = 0 }) {
     }).format(price);
   };
 
+  const handleClick = () => {
+    // SPA navigation to ProductDetail with query param
+    navigate(`/ProductDetail?id=${product.id}`);
+  };
+
   return (
     <motion.div
+      onClick={handleClick}
+      className="group cursor-pointer"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className="group"
     >
       <div className="relative overflow-hidden aspect-[4/5] mb-6 bg-[#EBE4D8]">
         <img
@@ -31,7 +40,7 @@ export default function ProductCard({ product, index = 0 }) {
           </span>
         </div>
       </div>
-      
+
       <div className="flex justify-between items-start">
         <div>
           <h3 className="font-serif text-xl text-[#0E2A47] mb-1 group-hover:text-[#A88D4B] transition-colors">
