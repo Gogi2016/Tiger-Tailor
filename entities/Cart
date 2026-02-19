@@ -7,10 +7,10 @@
       "description": "Reference to Product entity"
     },
     "product_name": {
-      "type": "string"
+      "type": "text"
     },
     "product_type": {
-      "type": "string"
+      "type": "text"
     },
     "base_price": {
       "type": "number"

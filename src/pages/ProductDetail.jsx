@@ -7,6 +7,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ShoppingCart, ChevronRight, ChevronLeft } from 'lucide-react';
+import { base44 } from '../api/base44Client';
+import { toast } from 'sonner';
 
 // Local products data (copy exactly from Products.jsx)
 const allProducts = [
@@ -144,21 +146,42 @@ export default function ProductDetail() {
     }
   };
 
-  const handleAddToCart = () => {
-    if (!selectedTailor || !selectedFabric) {
-      alert('Please select a tailor and fabric');
-      return;
-    }
-    if (!validateMeasurementStep()) {
-      alert('Please complete all required measurements');
-      return;
-    }
-    setIsAdding(true);
-    setTimeout(() => {
-      alert(`Added ${product.name} to cart!`);
-      setIsAdding(false);
-    }, 500);
-  };
+const handleAddToCart = async () => {
+  if (!selectedTailor || !selectedFabric) {
+    alert('Please select a tailor and fabric');
+    return;
+  }
+
+  if (!validateMeasurementStep()) {
+    alert('Please complete all required measurements');
+    return;
+  }
+
+  setIsAdding(true);
+  try {
+   await base44.entities.Cart.create({
+  product_id: product.id.toString(), // <-- convert to string if required
+  product_name: product.name,
+  product_type: product.type,
+  base_price: product.base_price,
+  quantity: 1,
+  status: 'cart',
+  customizations: {
+    tailor: selectedTailor,
+    fabric: selectedFabric,
+    notes: notes,
+  },
+  measurements: measurements,
+});
+
+    toast.success(`${product.name} added to cart 🛒`);
+  } catch (error) {
+    console.error(error);
+    toast.error('Failed to add item to cart');
+  } finally {
+    setIsAdding(false);
+  }
+};
 
   if (!product) {
     return (
