@@ -135,16 +135,6 @@ export default function Header() {
                   </motion.div>
                 ))}
               </nav>
-
-              <div className="mt-auto">
-                <Link
-                  to={createPageUrl('Contact')}
-                  className="block w-full py-4 bg-[#0E2A47] text-[#F5F1E8] text-center text-base"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  Book Consultation
-                </Link>
-              </div>
             </div>
           </motion.div>
         )}

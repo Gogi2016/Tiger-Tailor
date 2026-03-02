@@ -67,31 +67,8 @@ export default function HeroSection() {
           transition={{ duration: 0.8, delay: 0.9 }}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <a
-            href="#philosophy"
-            className="px-8 py-4 border border-[#F5F1E8]/50 text-[#F5F1E8] text-sm tracking-wide hover:bg-[#F5F1E8]/10 transition-colors min-w-[200px]"
-          >
-            Discover More
-          </a>
         </motion.div>
       </div>
-
-      {/* Scroll indicator */}
-      <motion.a
-        href="#philosophy"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex flex-col items-center gap-2 text-[#F5F1E8]/60 hover:text-[#F5F1E8] transition-colors"
-      >
-        <span className="text-xs tracking-widest uppercase">Scroll</span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-        >
-          <ArrowDown className="w-4 h-4" />
-        </motion.div>
-      </motion.a>
     </section>
   );
 }

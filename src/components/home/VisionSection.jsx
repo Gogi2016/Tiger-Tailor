@@ -61,7 +61,7 @@ export default function VisionSection() {
             Join thousands who've discovered the difference bespoke tailoring makes.
           </p>
           <a
-            href="/contact"
+            href="#/Contact"
             className="px-8 py-4 bg-[#F5F1E8] text-[#0E2A47] text-sm tracking-wide hover:bg-white transition-colors min-w-[200px]"
           >
             Book Your Consultation
