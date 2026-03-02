@@ -3,8 +3,6 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ShoppingCart } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
 
 const navLinks = [
   { label: 'Home', href: createPageUrl('Home') },
@@ -15,17 +13,25 @@ const navLinks = [
 export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
-  const { data: cartItems = [] } = useQuery({
-    queryKey: ['Cart'],
-    queryFn: async () => {
-      try {
-        return await base44.entities.Cart.filter({ status: 'CSart' });
-      } catch {
-        return [];
-      }
-    },
-  });
+  const [cartCount, setCartCount] = useState(0);
+
+  // Read cart count from localStorage and keep it in sync
+  useEffect(() => {
+    const updateCartCount = () => {
+      const items = JSON.parse(localStorage.getItem('cart') || '[]');
+      setCartCount(items.length);
+    };
+
+    updateCartCount();
+
+    // Listen for storage events (cross-tab) and a custom event for same-tab updates
+    window.addEventListener('storage', updateCartCount);
+    window.addEventListener('cartUpdated', updateCartCount);
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,14 +83,13 @@ export default function Header() {
                 className="relative p-2 text-[#0E2A47] hover:text-[#A88D4B] transition-colors"
               >
                 <ShoppingCart className="w-5 h-5" />
-                {cartItems.length > 0 && (
+                {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#A88D4B] text-white text-xs flex items-center justify-center rounded-full">
-                    {cartItems.length}
+                    {cartCount}
                   </span>
                 )}
               </Link>
 
-              
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
                 className="md:hidden p-2 text-[#0E2A47]"
@@ -116,9 +121,9 @@ export default function Header() {
                   <X className="w-6 h-6 text-[#0E2A47]" />
                 </button>
               </div>
-              
+
               <nav className="flex flex-col gap-6">
-                {navLinks.map((link, index) => (
+                {navLinks.map((link) => (
                   <motion.div key={link.label}>
                     <Link
                       to={link.href}
@@ -130,7 +135,7 @@ export default function Header() {
                   </motion.div>
                 ))}
               </nav>
-              
+
               <div className="mt-auto">
                 <Link
                   to={createPageUrl('Contact')}

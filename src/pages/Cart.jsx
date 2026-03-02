@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
@@ -17,18 +17,20 @@ export default function Cart() {
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerName, setCustomerName] = useState('');
 
-  const { data: cartItems = [], isLoading } = useQuery({
-    queryKey: ['cart'],
-    queryFn: () => base44.entities.Cart.filter({ status: 'cart' }),
-  });
+  const [cartItems, setCartItems] = useState([]);
+const isLoading = false;
 
-  const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.Cart.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['cart']);
-      toast.success('Item removed from cart');
-    },
-  });
+useEffect(() => {
+  const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
+  setCartItems(storedCart);
+}, []);
+
+const deleteItem = (id) => {
+  const updated = cartItems.filter(item => item.id !== id);
+  setCartItems(updated);
+  localStorage.setItem('cart', JSON.stringify(updated));
+  toast.success('Item removed from cart');
+};
 
   const handleCheckout = () => {
     if (!customerEmail || !customerPhone || !customerName) {
@@ -119,7 +121,7 @@ export default function Cart() {
                           <p className="text-sm text-[#2B2B2B]/60 uppercase">{item.product_type}</p>
                         </div>
                         <button
-                          onClick={() => deleteMutation.mutate(item.id)}
+                         onClick={() => deleteItem(item.id)}
                           className="text-[#2B2B2B]/40 hover:text-red-500 transition-colors"
                         >
                           <Trash2 className="w-5 h-5" />

@@ -57,7 +57,7 @@ import Returns from './pages/Returns';
 import __Layout from './Layout.jsx';
 import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
-
+import Checkout from './pages/Checkout';
 
 export const PAGES = {
     "Home": Home,
@@ -69,6 +69,7 @@ export const PAGES = {
     "Returns": Returns,
     "Cart": Cart,
     "ProductDetail": ProductDetail,
+    "Checkout": Checkout,
 }
 
 export const pagesConfig = {

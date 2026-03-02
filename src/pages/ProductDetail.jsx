@@ -6,11 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ShoppingCart, ChevronRight, ChevronLeft } from 'lucide-react';
-import { base44 } from '../api/base44Client';
+import { ShoppingCart, ChevronRight, ChevronLeft, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Local products data (copy exactly from Products.jsx)
+// Local products data
 const allProducts = [
   { id: 1, name: "The Classic Two-Piece", type: "suit", base_price: 15000, images: ["https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=750&fit=crop"] },
   { id: 2, name: "The Executive Three-Piece", type: "suit", base_price: 22000, images: ["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=750&fit=crop"] },
@@ -64,7 +63,7 @@ const measurementSteps = [
 
 export default function ProductDetail() {
   const location = useLocation();
-  const productId = parseInt(new URLSearchParams(location.search).get('id'), 10); // convert to number
+  const productId = parseInt(new URLSearchParams(location.search).get('id'), 10);
 
   const [product, setProduct] = useState(null);
   const [selectedTailor, setSelectedTailor] = useState('');
@@ -74,6 +73,8 @@ export default function ProductDetail() {
   const [measurementStep, setMeasurementStep] = useState(0);
   const [measurementErrors, setMeasurementErrors] = useState({});
   const [isAdding, setIsAdding] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const [formKey, setFormKey] = useState(0);
 
   const tailors = [
     { id: 1, name: 'James Mokoena', style_focus: 'Classic British Tailoring' },
@@ -84,7 +85,6 @@ export default function ProductDetail() {
     { id: 6, name: 'William Thornton', style_focus: 'British Heritage' },
     { id: 7, name: 'Marcus Chen', style_focus: 'Modern Slim-fit' },
     { id: 8, name: 'Sofia Martinez', style_focus: 'Contemporary Luxury' },
-
   ];
 
   const fabrics = [
@@ -146,42 +146,64 @@ export default function ProductDetail() {
     }
   };
 
-const handleAddToCart = async () => {
-  if (!selectedTailor || !selectedFabric) {
-    alert('Please select a tailor and fabric');
-    return;
-  }
+  const handleAddToCart = async () => {
+    if (!selectedTailor || !selectedFabric) {
+      toast.error('Please select a tailor and fabric');
+      return;
+    }
 
-  if (!validateMeasurementStep()) {
-    alert('Please complete all required measurements');
-    return;
-  }
+    if (!validateMeasurementStep()) {
+      toast.error('Please complete all required measurements');
+      return;
+    }
 
-  setIsAdding(true);
-  try {
-   await base44.entities.Cart.create({
-  product_id: product.id.toString(), // <-- convert to string if required
-  product_name: product.name,
-  product_type: product.type,
-  base_price: product.base_price,
-  quantity: 1,
-  status: 'cart',
-  customizations: {
-    tailor: selectedTailor,
-    fabric: selectedFabric,
-    notes: notes,
-  },
-  measurements: measurements,
-});
+    setIsAdding(true);
+    try {
+      const newItem = {
+        id: Date.now(),
+        product_id: product.id.toString(),
+        product_name: product.name,
+        product_type: product.type,
+        base_price: product.base_price,
+        quantity: 1,
+        status: 'cart',
+        customizations: {
+          tailor: selectedTailor,
+          fabric: selectedFabric,
+          notes: notes,
+        },
+        measurements: measurements,
+      };
 
-    toast.success(`${product.name} added to cart 🛒`);
-  } catch (error) {
-    console.error(error);
-    toast.error('Failed to add item to cart');
-  } finally {
-    setIsAdding(false);
-  }
-};
+      const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+      existingCart.push(newItem);
+      localStorage.setItem('cart', JSON.stringify(existingCart));
+
+      // Notify Header and any other listeners that cart has changed
+      window.dispatchEvent(new Event('cartUpdated'));
+
+      toast.success(`${product.name} added to cart 🛒`);
+
+      // Show success state on button for 2 seconds, then reset the whole form
+      setAddedToCart(true);
+      setTimeout(() => {
+        setAddedToCart(false);
+        // Clear all form fields
+        setSelectedTailor('');
+        setSelectedFabric('');
+        setNotes('');
+        setMeasurements({});
+        setMeasurementStep(0);
+        setMeasurementErrors({});
+        setFormKey(k => k + 1);
+      }, 2000);
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to add item to cart');
+    } finally {
+      setIsAdding(false);
+    }
+  };
 
   if (!product) {
     return (
@@ -213,7 +235,7 @@ const handleAddToCart = async () => {
             </div>
 
             {/* Tailor & Fabric Selection */}
-            <div className="space-y-4">
+            <div key={formKey} className="space-y-4">
               <div className="space-y-2">
                 <Label>Select Tailor *</Label>
                 <Select value={selectedTailor} onValueChange={setSelectedTailor}>
@@ -286,8 +308,26 @@ const handleAddToCart = async () => {
                     Next <ChevronRight className="w-4 h-4" />
                   </Button>
                 ) : (
-                  <Button onClick={handleAddToCart} disabled={isAdding} className="bg-[#0E2A47] text-[#F5F1E8] ml-auto flex items-center gap-2">
-                    <ShoppingCart className="w-5 h-5" /> {isAdding ? 'Adding...' : 'Add to Cart'}
+                  <Button
+                    onClick={handleAddToCart}
+                    disabled={isAdding}
+                    className={`ml-auto flex items-center gap-2 transition-all duration-300 ${
+                      addedToCart
+                        ? 'bg-green-600 hover:bg-green-600 text-white'
+                        : 'bg-[#0E2A47] text-[#F5F1E8]'
+                    }`}
+                  >
+                    {addedToCart ? (
+                      <>
+                        <CheckCircle className="w-5 h-5" /> Added to Cart!
+                      </>
+                    ) : isAdding ? (
+                      'Adding...'
+                    ) : (
+                      <>
+                        <ShoppingCart className="w-5 h-5" /> Add to Cart
+                      </>
+                    )}
                   </Button>
                 )}
               </div>
