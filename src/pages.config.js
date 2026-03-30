@@ -58,6 +58,8 @@ import __Layout from './Layout.jsx';
 import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
+import Tailors from './pages/Tailors';
+import Fabrics from './pages/Fabrics';
 
 export const PAGES = {
     "Home": Home,
@@ -70,6 +72,8 @@ export const PAGES = {
     "Cart": Cart,
     "ProductDetail": ProductDetail,
     "Checkout": Checkout,
+    "Tailors": Tailors,
+    "Fabrics": Fabrics,
 }
 
 export const pagesConfig = {

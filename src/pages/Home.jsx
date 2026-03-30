@@ -5,6 +5,7 @@ import ProblemSection from '@/components/home/ProblemSection';
 import ProductsSection from '@/components/home/ProductsSection';
 import ProcessSection from '@/components/home/ProcessSection';
 import TailorsSection from '@/components/home/TailorsSection';
+import FabricsSection from '@/components/home/FabricsSection';
 import CommunicationSection from '@/components/home/CommunicationSection';
 import TrustSection from '@/components/home/TrustSection';
 import VisionSection from '@/components/home/VisionSection';
@@ -18,6 +19,7 @@ export default function Home() {
       <ProductsSection />
       <ProcessSection />
       <TailorsSection />
+      <FabricsSection />
       <CommunicationSection />
       <TrustSection />
       <VisionSection />

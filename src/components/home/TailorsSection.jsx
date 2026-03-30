@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import TailorCard from '@/components/ui/TailorCard';
 import TailorOverlay from '@/components/ui/TailorOverlay';
 
-const tailors = [
+const featuredTailors = [
   {
     id: 1,
     name: "James Mokoena",
@@ -17,7 +19,7 @@ const tailors = [
     samples: [
       "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=400&h=400&fit=crop",
       "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=400&h=400&fit=crop",
-      "https://tse1.mm.bing.net/th/id/OIP.PowMOIMjPsLKD-707RNBLgHaI4?pid=Api&P=0&h=220"
+      "https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?w=400&h=400&fit=crop"
     ]
   },
   {
@@ -60,34 +62,42 @@ export default function TailorsSection() {
   return (
     <section id="tailors" className="py-24 md:py-32 bg-[#F5F1E8]">
       <div className="max-w-[1200px] mx-auto px-6">
+
+        {/* Header — mirrors ProductsSection layout */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-2xl mx-auto mb-16"
+          className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-16"
         >
-          <span className="text-xs tracking-[0.3em] uppercase text-[#A88D4B] block mb-4">
-            Meet Your Artisans
-          </span>
-          <h2 className="font-serif text-4xl md:text-5xl text-[#0E2A47] mb-6 leading-[1.2]">
-            Choose Your <span className="italic">Tailor</span>
-          </h2>
-          <p className="text-[#2B2B2B]/70 leading-relaxed">
-            Each of our master tailors brings a unique perspective and specialty. 
-            Find the one whose vision aligns with yours.
-          </p>
+          <div>
+            <span className="text-xs tracking-[0.3em] uppercase text-[#A88D4B] block mb-4">
+              Meet Your Artisans
+            </span>
+            <h2 className="font-serif text-4xl md:text-5xl text-[#0E2A47] leading-[1.2]">
+              Choose Your <span className="italic">Tailor</span>
+            </h2>
+          </div>
+          <Link
+            to={createPageUrl('Tailors')}
+            className="text-sm text-[#0E2A47] border-b border-[#0E2A47] pb-1 hover:text-[#A88D4B] hover:border-[#A88D4B] transition-colors whitespace-nowrap"
+          >
+            View All Tailors →
+          </Link>
         </motion.div>
 
+        {/* 3 Featured Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {tailors.map((tailor) => (
-            <TailorCard 
-              key={tailor.id} 
-              tailor={tailor} 
+          {featuredTailors.map((tailor) => (
+            <TailorCard
+              key={tailor.id}
+              tailor={tailor}
               onClick={() => setSelectedTailor(tailor)}
             />
           ))}
         </div>
+
       </div>
 
       <TailorOverlay
