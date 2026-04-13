@@ -31,7 +31,6 @@ const categoryLabels = {
   general: 'General Info',
 };
 
-// Inline responsive styles injected once
 const ResponsiveStyles = () => (
   <style>{`
     .mg-tools-grid {
@@ -287,6 +286,26 @@ export default function MeasurementGuide() {
 
   const grouped = ['upper', 'arms', 'lower', 'general'];
 
+  //
+  // VIDEO —  Local file (swap in when ready)
+  //
+  //   1. Put your video in the /public folder of this project, e.g.:
+  //        /public/videos/measurement-guide.mp4
+  //   2. Delete the <div style={{ position: 'relative'...}}> block
+  //      and the <iframe> inside it (marked below).
+  //   3. Paste this in its place:
+  //
+  //        <video
+  //          controls
+  //          style={{ width: '100%', display: 'block' }}
+  //        >
+  //          <source src="/videos/measurement-guide.mp4" type="video/mp4" />
+  //          Your browser does not support the video tag.
+  //        </video>
+  //
+  
+  const YOUTUBE_VIDEO_ID = '3ZSfY87v6pM';
+
   return (
     <>
       <ResponsiveStyles />
@@ -344,7 +363,7 @@ export default function MeasurementGuide() {
               {/* Diagram */}
               <BodyDiagram activeId={activeSpot} onSelect={handleSpotSelect} />
 
-              {/* Legend + info */}
+              {/* Legend + info + video */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {[
@@ -367,19 +386,34 @@ export default function MeasurementGuide() {
                   </p>
                 </div>
 
-                <div style={{ background: '#0E2A47', padding: '26px 22px', textAlign: 'center' }}>
-                  <div style={{
-                    width: 46, height: 46, borderRadius: '50%', background: '#A88D4B',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    margin: '0 auto 12px',
-                  }}>
-                    <span style={{ color: '#fff', fontSize: 17, marginLeft: 3 }}>▶</span>
+                {/* ── VIDEO BLOCK START ── */}
+                <div style={{ background: '#0E2A47', padding: '22px' }}>
+                  <p style={{ fontFamily: 'sans-serif', fontSize: 10, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#A88D4B', marginBottom: 14, textAlign: 'center' }}>
+                    Video Tutorial
+                  </p>
+
+                  {/* 16:9 responsive container — delete this div + iframe to switch to local video */}
+                  <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0, overflow: 'hidden' }}>
+                   <iframe
+  src={`https://www.youtube.com/embed/${YOUTUBE_VIDEO_ID}`}
+  title="How to measure yourself — Tiger Hunt"
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowFullScreen
+  style={{
+    position: 'absolute', top: 0, left: 0,
+    width: '100%', height: '100%',
+    border: 'none',
+  }}
+/>
                   </div>
-                  <p style={{ fontFamily: 'Georgia, serif', fontSize: 14, color: 'rgba(255,255,255,0.9)', marginBottom: 6 }}>Video Tutorial</p>
-                  <p style={{ fontFamily: 'sans-serif', fontSize: 12, color: 'rgba(255,255,255,0.4)', lineHeight: 1.55 }}>
-                    Coming soon — a step-by-step guide with our master tailor
+                  {/* ── end of YouTube block — see OPTION B comment above to swap for local video ── */}
+
+                  <p style={{ fontFamily: 'sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.35)', lineHeight: 1.55, marginTop: 12, textAlign: 'center' }}>
+                    A step-by-step guide with our master tailor
                   </p>
                 </div>
+                {/* ── VIDEO BLOCK END ── */}
+
               </div>
             </div>
           </motion.div>
@@ -431,8 +465,8 @@ export default function MeasurementGuide() {
                 A Note from Our Tailors
               </p>
               <p style={{ fontFamily: 'sans-serif', fontSize: 'clamp(13px, 2vw, 14px)', color: 'rgba(255,255,255,0.8)', lineHeight: 1.75, marginBottom: 14 }}>
-                If you're new to measuring yourself, it might feel a bit tricky at first — but don’t worry, it gets easier with practice. 
-                The most important thing is to be consistent and take your time. If you have any doubts, it’s better to take multiple measurements and use the average. 
+                If you're new to measuring yourself, it might feel a bit tricky at first — but don't worry, it gets easier with practice.
+                The most important thing is to be consistent and take your time. If you have any doubts, it's better to take multiple measurements and use the average.
                 Remember, these measurements are the blueprint for your custom garment, so accuracy really helps us achieve the best fit possible.
               </p>
               <p style={{ fontFamily: 'sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: 0 }}>
