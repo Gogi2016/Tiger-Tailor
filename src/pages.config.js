@@ -60,6 +60,8 @@ import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import Tailors from './pages/Tailors';
 import Fabrics from './pages/Fabrics';
+import MeasurementGuide from './pages/Measurementguide';
+import { m } from 'framer-motion';
 
 export const PAGES = {
     "Home": Home,
@@ -74,6 +76,7 @@ export const PAGES = {
     "Checkout": Checkout,
     "Tailors": Tailors,
     "Fabrics": Fabrics,
+    "MeasurementGuide": MeasurementGuide,
 }
 
 export const pagesConfig = {

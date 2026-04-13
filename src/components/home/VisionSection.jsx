@@ -55,10 +55,10 @@ export default function VisionSection() {
           className="text-center mt-20 pt-16 border-t border-[#0E2A47]/10"
         >
           <h3 className="font-serif text-3xl text-[#0E2A47] mb-4">
-            Ready to Begin Your Journey?
+            Want to come to our offices?
           </h3>
           <p className="text-[#2B2B2B]/70 mb-8 max-w-md mx-auto">
-            Join thousands who've discovered the difference bespoke tailoring makes.
+            We can have a consultation to discuss your needs and how we can help you achieve the perfect fit. Our team is ready to welcome you and provide a personalized experience that reflects our commitment to quality and service.
           </p>
           <a
             href="#/Contact"

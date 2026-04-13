@@ -8,12 +8,26 @@ export function cn(...inputs) {
 
 export const isIframe = window.self !== window.top;
 
-// Add this:
+// Page keys must match exactly what is registered in pages.config.js
+// HashRouter uses /#/PageKey style routing
 export const createPageUrl = (page) => {
-  switch (page) {
-    case 'ProductDetail':
-      return '/product-detail'; // <- SPA relative path
-    default:
-      return '/';
-  }
+  const validPages = [
+    'Home',
+    'Products',
+    'ProductDetail',
+    'Tailors',
+    'Fabrics',
+    'MeasurementGuide',
+    'Cart',
+    'Checkout',
+    'Contact',
+    'Privacy',
+    'Terms',
+    'Shipping',
+    'Returns',
+  ];
+
+  if (page === 'Home') return '/';
+  if (validPages.includes(page)) return `/${page}`;
+  return '/';
 };

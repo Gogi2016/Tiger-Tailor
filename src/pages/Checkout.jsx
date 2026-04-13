@@ -9,7 +9,7 @@ import { Upload, CheckCircle, Copy, PackageCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 // ─────────────────────────────────────────────────────────────────
-// EmailJS credentials — fill in from your dashboard
+// EmailJS credentials
 // ─────────────────────────────────────────────────────────────────
 const EMAILJS_SERVICE_ID  = 'service_4pwayaq';
 const EMAILJS_TEMPLATE_ID = 'template_2lw9bty';
@@ -17,20 +17,16 @@ const EMAILJS_PUBLIC_KEY  = 'U8pqPF9DulJ3KPNo2';
 
 const ADMIN_EMAIL = 'vuyokazigogi@gmail.com';
 
-// Get a free API key at https://api.imgbb.com (free, instant, no credit card)
-// Paste your key here:
+// ImgBB API key — https://api.imgbb.com (free)
 const IMGBB_API_KEY = '8b259d62120db9611d94904096f197a0';
 
 // ─────────────────────────────────────────────────────────────────
 // ACTION REQUIRED IN EMAILJS (one-time fix, takes 10 seconds):
 //
-//   1. Go to Email Templates → open "Contact Us"
+//   1. Go to Email Templates → open your template
 //   2. On the RIGHT side, find the "To Email" field
-//   3. Delete "vuyokazigogi@gmail.com" and replace with: {{to_email}}
+//   3. Replace any hardcoded email with: {{to_email}}
 //   4. Click Save
-//
-// That's it. Without this change every email goes to admin only,
-// never to the customer.
 // ─────────────────────────────────────────────────────────────────
 
 async function sendEmail({ toEmail, name, replyTo, subject, message }) {
@@ -42,11 +38,11 @@ async function sendEmail({ toEmail, name, replyTo, subject, message }) {
       template_id: EMAILJS_TEMPLATE_ID,
       user_id:     EMAILJS_PUBLIC_KEY,
       template_params: {
-        to_email: toEmail,   // → "To Email" field in template must be {{to_email}}
-        name:     name,      // → {{name}} in template body
-        email:    replyTo,   // → {{email}} / Reply-To in template
-        title:    subject,   // → {{title}} in template subject line
-        message:  message,   // → {{message}} in template body
+        to_email: toEmail,
+        name:     name,
+        email:    replyTo,
+        title:    subject,
+        message:  message,
       },
     }),
   });
@@ -57,28 +53,28 @@ async function sendEmail({ toEmail, name, replyTo, subject, message }) {
   }
 }
 
-// Uploads base64 image to ImgBB and returns a public URL
-// Falls back gracefully if upload fails — email still sends, just without image link
+// Uploads proof of payment to ImgBB and returns a public URL
 async function uploadProofToImgbb(base64DataUrl) {
-  if (IMGBB_API_KEY === '8b259d62120db9611d94904096f197a0') return null;
+  try {
+    const base64 = base64DataUrl.split(',')[1];
+    if (!base64) return null;
 
-  // ImgBB expects raw base64 without the data:image/...;base64, prefix
-  const base64 = base64DataUrl.split(',')[1];
-  if (!base64) return null;
+    const formData = new FormData();
+    formData.append('key', IMGBB_API_KEY);
+    formData.append('image', base64);
+    formData.append('expiration', 15552000); // 6 months
 
-  const formData = new FormData();
-  formData.append('key', IMGBB_API_KEY);
-  formData.append('image', base64);
-  formData.append('expiration', 15552000); // 6 months
+    const res = await fetch('https://api.imgbb.com/1/upload', {
+      method: 'POST',
+      body: formData,
+    });
 
-  const res = await fetch('https://api.imgbb.com/1/upload', {
-    method: 'POST',
-    body: formData,
-  });
-
-  if (!res.ok) return null;
-  const data = await res.json();
-  return data?.data?.url || null;
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data?.data?.url || null;
+  } catch {
+    return null;
+  }
 }
 
 export default function Checkout() {
@@ -125,21 +121,15 @@ export default function Checkout() {
   };
 
   const handleSubmitOrder = async () => {
-    if (!proofOfPayment) { toast.error('Please upload proof of payment'); return; }
-
-    if (
-      EMAILJS_SERVICE_ID  === 'YOUR_SERVICE_ID'  ||
-      EMAILJS_TEMPLATE_ID === 'YOUR_CONTACT_US_TEMPLATE_ID' ||
-      EMAILJS_PUBLIC_KEY  === 'YOUR_PUBLIC_KEY'
-    ) {
-      toast.error('Please fill in your EmailJS credentials in Checkout.jsx');
+    if (!proofOfPayment) {
+      toast.error('Please upload proof of payment');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Upload proof of payment to ImgBB to get a shareable link for the email
+      // Upload proof to ImgBB for shareable link in email
       let proofUrl = null;
       try {
         proofUrl = await uploadProofToImgbb(proofOfPayment);
@@ -173,7 +163,7 @@ export default function Checkout() {
         'Your Contact Details:\n' +
         'Email : ' + customerEmail + '\n' +
         'Phone : ' + customerPhone + '\n\n' +
-        'Our team will review your payment and contact you within 24-48 hours to confirm the details and production timeline.\n\n' +
+        'Our team will review your payment and contact you within 24–48 hours to confirm the details and production timeline.\n\n' +
         'We appreciate your business and look forward to crafting your bespoke garments.\n\n' +
         'Best regards,\n' +
         'Tiger Hunt Team\n\n' +
@@ -182,9 +172,9 @@ export default function Checkout() {
         'Email : hello@tigerhunt.co.za';
 
       await sendEmail({
-        toEmail:  customerEmail,           // goes TO the customer
+        toEmail:  customerEmail,
         name:     'Tiger Hunt',
-        replyTo:  'hello@tigerhunt.co.za', // customer can reply to the business
+        replyTo:  'hello@tigerhunt.co.za',
         subject:  'Order Confirmed #' + reference + ' — Tiger Hunt',
         message:  customerMessage,
       });
@@ -211,27 +201,27 @@ export default function Checkout() {
         'Payment Proof   : ' + proofFileName + '\n' +
         (proofUrl
           ? 'View Proof      : ' + proofUrl + '\n'
-          : '(Image link unavailable — add IMGBB_API_KEY to Checkout.jsx)\n') +
+          : '(Image could not be uploaded — customer will email directly)\n') +
         '\n' +
         '──────────────────────────────\n' +
         'WHAT TO DO NEXT\n' +
         '──────────────────────────────\n' +
         '1. Verify the proof of payment\n' +
-        '2. Reply to this email or contact the customer directly:\n' +
+        '2. Contact the customer directly:\n' +
         '   Email: ' + customerEmail + '\n' +
         '   Phone: ' + customerPhone + '\n' +
         '3. Confirm production timeline (4–6 weeks)\n\n' +
         'Tiger Hunt Automated Order System';
 
       await sendEmail({
-        toEmail:  ADMIN_EMAIL,    // goes TO admin
+        toEmail:  ADMIN_EMAIL,
         name:     customerName,
-        replyTo:  customerEmail,  // admin can hit Reply to reach customer directly
+        replyTo:  customerEmail,
         subject:  '🛎️ New Order [' + reference + '] from ' + customerName + ' — ' + formatPrice(total),
         message:  adminMessage,
       });
 
-      // ── Clear cart & show success ───────────────────────────────
+      // Clear cart
       localStorage.removeItem('cart');
       window.dispatchEvent(new Event('cartUpdated'));
 
@@ -247,11 +237,14 @@ export default function Checkout() {
     }
   };
 
-  const copyToClipboard = (text) => { navigator.clipboard.writeText(text); toast.success('Copied!'); };
+  const copyToClipboard = (text) => {
+    navigator.clipboard.writeText(text);
+    toast.success('Copied!');
+  };
 
   if (!cartItems) return null;
 
-  // ── Success screen ─────────────────────────────────────────────
+  // ── Success screen ──────────────────────────────────────────────
   if (orderComplete) {
     return (
       <div className="min-h-screen bg-[#F5F1E8] pt-32 pb-16 flex items-center justify-center">
@@ -277,7 +270,7 @@ export default function Checkout() {
     );
   }
 
-  // ── Main page ──────────────────────────────────────────────────
+  // ── Main page ───────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#F5F1E8] pt-32 pb-16">
       <div className="max-w-[800px] mx-auto px-6">

@@ -6,22 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ShoppingCart, ChevronRight, ChevronLeft, CheckCircle, Clock, Star, Users, Scissors, MapPin, Sparkles } from 'lucide-react';
+import { ShoppingCart, ChevronRight, ChevronLeft, CheckCircle, Clock, Star, Users, Scissors, MapPin, Sparkles, Shield, Ruler, Award } from 'lucide-react';
 import { toast } from 'sonner';
 
 const allProducts = [
-  { id: 1, name: "The Classic Two-Piece", type: "suit", base_price: 15000, images: ["https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=750&fit=crop"] },
-  { id: 2, name: "The Executive Three-Piece", type: "suit", base_price: 22000, images: ["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=750&fit=crop"] },
-  { id: 3, name: "The Director's Suit", type: "suit", base_price: 28000, images: ["https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=600&h=750&fit=crop"] },
-  { id: 4, name: "The Wedding Collection", type: "suit", base_price: 35000, images: ["https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&h=750&fit=crop"] },
-  { id: 5, name: "The Perfect White Shirt", type: "shirt", base_price: 3500, images: ["https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=750&fit=crop"] },
-  { id: 6, name: "The Business Essential", type: "shirt", base_price: 2800, images: ["https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&h=750&fit=crop"] },
-  { id: 7, name: "The Linen Casual", type: "shirt", base_price: 3200, images: ["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=750&fit=crop"] },
-  { id: 8, name: "The Overcoat", type: "coat", base_price: 18000, images: ["https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=750&fit=crop"] },
-  { id: 9, name: "The Trench", type: "coat", base_price: 16000, images: ["https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=750&fit=crop"] },
-  { id: 10, name: "Oxford Brogues", type: "shoes", base_price: 8500, images: ["https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&h=750&fit=crop"] },
-  { id: 11, name: "Chelsea Boots", type: "shoes", base_price: 9500, images: ["https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=600&h=750&fit=crop"] },
-  { id: 12, name: "Silk Pocket Square Set", type: "accessory", base_price: 1200, images: ["https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=750&fit=crop"] },
+  { id: 1, name: "The Classic Two-Piece", type: "suit", base_price: 15000, images: ["https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=750&fit=crop"], description: "A timeless silhouette refined for the modern professional. The Classic Two-Piece is the cornerstone of any distinguished wardrobe — built to carry you through boardrooms, celebrations, and everything in between.", features: ["Full canvas construction", "Pick stitching on lapels", "Working buttonholes", "Surgeon's cuffs"], care: "Dry clean only. Store on a wide-shouldered hanger." },
+  { id: 2, name: "The Executive Three-Piece", type: "suit", base_price: 22000, images: ["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=750&fit=crop"], description: "Authority, elegance, and presence — the three-piece suit is a statement of intent. The matching waistcoat adds a layer of sophistication that sets you apart before you say a word.", features: ["Matching waistcoat included", "Half-canvas construction", "Bespoke lining options", "Horn buttons"], care: "Dry clean only. Rotate with other suits." },
+  { id: 3, name: "The Director's Suit", type: "suit", base_price: 28000, images: ["https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=600&h=750&fit=crop"], description: "Designed for those who shape decisions. The Director's Suit commands the room with a structured shoulder and clean trouser line — a garment that works as hard as you do.", features: ["Structured shoulder", "Double-pleated trousers", "Jetted chest pocket", "AMF stitching throughout"], care: "Dry clean only. Press with a damp cloth." },
+  { id: 4, name: "The Wedding Collection", type: "suit", base_price: 35000, images: ["https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&h=750&fit=crop"], description: "Your wedding day demands perfection. The Wedding Collection is crafted with extraordinary attention to detail — a garment you will cherish long after the celebration ends.", features: ["Hand-finished buttonholes", "Personalised monogram", "Peak or notch lapel", "Coordinated accessories available"], care: "Dry clean. Store in provided garment bag." },
+  { id: 5, name: "The Perfect White Shirt", type: "shirt", base_price: 3500, images: ["https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=750&fit=crop"], description: "No wardrobe is complete without the perfect white shirt. Ours is cut to sit impeccably under a jacket and stand alone with equal confidence.", features: ["Mother-of-pearl buttons", "Split yoke construction", "French seams", "Gauntlet cuffs"], care: "Machine wash 30°C. Iron while damp." },
+  { id: 6, name: "The Business Essential", type: "shirt", base_price: 2800, images: ["https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&h=750&fit=crop"], description: "The workhorse of the professional wardrobe. Crafted to hold its shape through back-to-back meetings and long travel days.", features: ["Wrinkle-resistant finish", "Reinforced collar", "Classic barrel cuffs", "Precise collar stays"], care: "Machine wash 30°C. Low iron." },
+  { id: 7, name: "The Linen Casual", type: "shirt", base_price: 3200, images: ["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=750&fit=crop"], description: "Ease, warmth, and effortless style. The Linen Casual moves between smart-casual and resort wear with natural grace.", features: ["Pure linen construction", "Relaxed fit available", "Coconut shell buttons", "Curved hem"], care: "Hand wash or gentle cycle. Iron while damp." },
+  { id: 8, name: "The Overcoat", type: "coat", base_price: 18000, images: ["https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=750&fit=crop"], description: "Winter calls for substance. The Overcoat is built from heavyweight cloth to wrap you in warmth without sacrificing an ounce of refinement.", features: ["Heavyweight outer cloth", "Fully lined in silk-blend", "Fly front fastening", "Ticket pocket"], care: "Dry clean only. Brush after each wear." },
+  { id: 9, name: "The Trench", type: "coat", base_price: 16000, images: ["https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=750&fit=crop"], description: "Born from British military heritage and refined for city life. The Trench transitions from rain to shine with iconic elegance.", features: ["Waterproof outer layer", "Removable storm lining", "D-ring belt", "Gun flap detail"], care: "Dry clean only. Re-wax seasonally." },
+  { id: 10, name: "Oxford Brogues", type: "shoes", base_price: 8500, images: ["https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&h=750&fit=crop"], description: "Hand-crafted on a classic last, these brogues carry the soul of Northampton in every stitch. They will outlast trends and improve with age.", features: ["Goodyear welted sole", "Full-grain leather upper", "Leather insole", "Hand-finished edges"], care: "Polish regularly. Use cedar shoe trees." },
+  { id: 11, name: "Chelsea Boots", type: "shoes", base_price: 9500, images: ["https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=600&h=750&fit=crop"], description: "The Chelsea boot is the most versatile shoe in a man's wardrobe. Ours is built to last decades and worn to look better for it.", features: ["Elastic side gussets", "Goodyear welted", "Leather lining", "Stacked leather heel"], care: "Polish with matching cream. Condition leather seasonally." },
+  { id: 12, name: "Silk Pocket Square Set", type: "accessory", base_price: 1200, images: ["https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=750&fit=crop"], description: "The finishing touch that separates the dressed from the well-dressed. Each set is hand-rolled and finished with care.", features: ["100% pure silk", "Hand-rolled edges", "Set of three colourways", "Gift box included"], care: "Dry clean or hand wash cold. Press with cool iron." },
 ];
 
 const measurementSteps = [
@@ -60,16 +60,9 @@ const tierBadgeStyles = {
   luxury:   'bg-[#A88D4B]/25 text-[#A88D4B]',
 };
 
-// ── Tailor Details Card ──
 function TailorDetailsCard({ tailor }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -12, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.98 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="overflow-hidden border border-[#A88D4B]/30 bg-gradient-to-br from-[#0E2A47] to-[#0a1f36]"
-    >
+    <motion.div initial={{ opacity: 0, y: -12, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.98 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="overflow-hidden border border-[#A88D4B]/30 bg-gradient-to-br from-[#0E2A47] to-[#0a1f36]">
       <div className="flex">
         <div className="w-28 flex-shrink-0 relative overflow-hidden">
           <img src={tailor.portrait} alt={tailor.name} className="w-full h-full object-cover object-top" style={{ minHeight: '100%' }} />
@@ -83,47 +76,19 @@ function TailorDetailsCard({ tailor }) {
               <p className="text-[#A88D4B] text-xs mt-0.5">{tailor.style_focus}</p>
             </div>
             <div className="text-right flex-shrink-0 ml-4">
-              <div className="flex items-center gap-1 justify-end mb-1">
-                <Star className="w-3 h-3 text-[#A88D4B] fill-[#A88D4B]" />
-                <span className="text-white text-xs font-medium">{tailor.years_experience} yrs exp</span>
-              </div>
-              <div className="flex items-center gap-1 justify-end">
-                <Clock className="w-3 h-3 text-white/50" />
-                <span className="text-white/50 text-xs">{tailor.lead_time_days} day lead</span>
-              </div>
+              <div className="flex items-center gap-1 justify-end mb-1"><Star className="w-3 h-3 text-[#A88D4B] fill-[#A88D4B]" /><span className="text-white text-xs font-medium">{tailor.years_experience} yrs exp</span></div>
+              <div className="flex items-center gap-1 justify-end"><Clock className="w-3 h-3 text-white/50" /><span className="text-white/50 text-xs">{tailor.lead_time_days} day lead</span></div>
             </div>
           </div>
-          <p className="text-white/70 text-xs leading-relaxed mb-4 italic border-l-2 border-[#A88D4B]/40 pl-3">
-            "{tailor.approach}"
-          </p>
+          <p className="text-white/70 text-xs leading-relaxed mb-4 italic border-l-2 border-[#A88D4B]/40 pl-3">"{tailor.approach}"</p>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Scissors className="w-3 h-3 text-[#A88D4B]" />
-                <p className="text-[#A88D4B] text-[10px] tracking-[0.2em] uppercase">Specialties</p>
-              </div>
-              <div className="space-y-1">
-                {tailor.specialties.map((s, i) => (
-                  <div key={i} className="flex items-center gap-1.5">
-                    <div className="w-1 h-1 rounded-full bg-[#A88D4B]/60 flex-shrink-0" />
-                    <span className="text-white/65 text-xs">{s}</span>
-                  </div>
-                ))}
-              </div>
+              <div className="flex items-center gap-1.5 mb-2"><Scissors className="w-3 h-3 text-[#A88D4B]" /><p className="text-[#A88D4B] text-[10px] tracking-[0.2em] uppercase">Specialties</p></div>
+              <div className="space-y-1">{tailor.specialties.map((s, i) => (<div key={i} className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-[#A88D4B]/60 flex-shrink-0" /><span className="text-white/65 text-xs">{s}</span></div>))}</div>
             </div>
             <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <Users className="w-3 h-3 text-[#A88D4B]" />
-                <p className="text-[#A88D4B] text-[10px] tracking-[0.2em] uppercase">Best For</p>
-              </div>
-              <div className="space-y-1">
-                {tailor.best_suited_for.map((s, i) => (
-                  <div key={i} className="flex items-center gap-1.5">
-                    <div className="w-1 h-1 rounded-full bg-[#A88D4B]/60 flex-shrink-0" />
-                    <span className="text-white/65 text-xs">{s}</span>
-                  </div>
-                ))}
-              </div>
+              <div className="flex items-center gap-1.5 mb-2"><Users className="w-3 h-3 text-[#A88D4B]" /><p className="text-[#A88D4B] text-[10px] tracking-[0.2em] uppercase">Best For</p></div>
+              <div className="space-y-1">{tailor.best_suited_for.map((s, i) => (<div key={i} className="flex items-center gap-1.5"><div className="w-1 h-1 rounded-full bg-[#A88D4B]/60 flex-shrink-0" /><span className="text-white/65 text-xs">{s}</span></div>))}</div>
             </div>
           </div>
         </div>
@@ -132,71 +97,31 @@ function TailorDetailsCard({ tailor }) {
   );
 }
 
-// ── Fabric Details Card ──
 function FabricDetailsCard({ fabric }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: -12, scale: 0.98 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      exit={{ opacity: 0, y: -8, scale: 0.98 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="overflow-hidden border border-[#A88D4B]/30 bg-gradient-to-br from-[#1c1408] to-[#2e2010]"
-    >
+    <motion.div initial={{ opacity: 0, y: -12, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.98 }} transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }} className="overflow-hidden border border-[#A88D4B]/30 bg-gradient-to-br from-[#1c1408] to-[#2e2010]">
       <div className="flex">
-        {/* Fabric texture photo */}
         <div className="w-28 flex-shrink-0 relative overflow-hidden">
-          <img
-            src={fabric.image}
-            alt={fabric.name}
-            className="w-full h-full object-cover"
-            style={{ minHeight: '100%' }}
-          />
-          {/* colour swatch strip at bottom of image */}
+          <img src={fabric.image} alt={fabric.name} className="w-full h-full object-cover" style={{ minHeight: '100%' }} />
           <div className="absolute bottom-0 left-0 right-0 h-1.5" style={{ backgroundColor: fabric.color_swatch }} />
           <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#1c1408]/70" />
         </div>
-
-        {/* Content */}
         <div className="flex-1 p-5">
-          {/* Header */}
           <div className="flex items-start justify-between mb-3">
             <div>
               <p className="text-[#A88D4B] text-[10px] tracking-[0.25em] uppercase mb-1">Your Selected Fabric</p>
               <h4 className="text-white font-serif text-lg leading-tight">{fabric.name}</h4>
-              <span className={`inline-block mt-1 px-2 py-0.5 text-[10px] tracking-[0.15em] uppercase ${tierBadgeStyles[fabric.price_tier]}`}>
-                {fabric.price_tier}
-              </span>
+              <span className={`inline-block mt-1 px-2 py-0.5 text-[10px] tracking-[0.15em] uppercase ${tierBadgeStyles[fabric.price_tier]}`}>{fabric.price_tier}</span>
             </div>
             <div className="text-right flex-shrink-0 ml-4 space-y-1.5">
-              <div className="flex items-center gap-1 justify-end">
-                <MapPin className="w-3 h-3 text-[#A88D4B]" />
-                <span className="text-white text-xs">{fabric.origin}</span>
-              </div>
-              <div className="flex items-center gap-1 justify-end">
-                <Sparkles className="w-3 h-3 text-white/40" />
-                <span className="text-white/50 text-xs">{fabric.weight}</span>
-              </div>
+              <div className="flex items-center gap-1 justify-end"><MapPin className="w-3 h-3 text-[#A88D4B]" /><span className="text-white text-xs">{fabric.origin}</span></div>
+              <div className="flex items-center gap-1 justify-end"><Sparkles className="w-3 h-3 text-white/40" /><span className="text-white/50 text-xs">{fabric.weight}</span></div>
             </div>
           </div>
-
-          {/* Description */}
-          <p className="text-white/70 text-xs leading-relaxed mb-4 italic border-l-2 border-[#A88D4B]/40 pl-3">
-            {fabric.description}
-          </p>
-
-          {/* Best For tags */}
+          <p className="text-white/70 text-xs leading-relaxed mb-4 italic border-l-2 border-[#A88D4B]/40 pl-3">{fabric.description}</p>
           <div>
-            <div className="flex items-center gap-1.5 mb-2">
-              <Scissors className="w-3 h-3 text-[#A88D4B]" />
-              <p className="text-[#A88D4B] text-[10px] tracking-[0.2em] uppercase">Best For</p>
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {fabric.best_for.map((use, i) => (
-                <span key={i} className="px-2.5 py-1 bg-white/10 text-white/70 text-[10px] tracking-wide border border-white/10">
-                  {use}
-                </span>
-              ))}
-            </div>
+            <div className="flex items-center gap-1.5 mb-2"><Scissors className="w-3 h-3 text-[#A88D4B]" /><p className="text-[#A88D4B] text-[10px] tracking-[0.2em] uppercase">Best For</p></div>
+            <div className="flex flex-wrap gap-1.5">{fabric.best_for.map((use, i) => (<span key={i} className="px-2.5 py-1 bg-white/10 text-white/70 text-[10px] tracking-wide border border-white/10">{use}</span>))}</div>
           </div>
         </div>
       </div>
@@ -223,9 +148,8 @@ export default function ProductDetail() {
   const selectedFabric = fabrics.find(f => f.name === selectedFabricName) || null;
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    const foundProduct = allProducts.find(p => p.id === productId);
-    setProduct(foundProduct || null);
+    window.scrollTo({ top: 0, behavior: 'instant' });
+    setProduct(allProducts.find(p => p.id === productId) || null);
   }, [productId]);
 
   const formatPrice = (price) =>
@@ -264,14 +188,8 @@ export default function ProductDetail() {
   };
 
   const handleAddToCart = async () => {
-    if (!selectedTailorName || !selectedFabricName) {
-      toast.error('Please select a tailor and fabric');
-      return;
-    }
-    if (!validateMeasurementStep()) {
-      toast.error('Please complete all required measurements');
-      return;
-    }
+    if (!selectedTailorName || !selectedFabricName) { toast.error('Please select a tailor and fabric'); return; }
+    if (!validateMeasurementStep()) { toast.error('Please complete all required measurements'); return; }
     setIsAdding(true);
     try {
       const newItem = {
@@ -322,71 +240,130 @@ export default function ProductDetail() {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="min-h-screen bg-[#F5F1E8] pt-32 pb-16">
       <div className="max-w-[1200px] mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-          {/* Product Image */}
+        {/* ── SECTION 1: Product Details ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+
+          {/* Image */}
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
-            <div className="aspect-[4/5] bg-[#EBE4D8] overflow-hidden">
+            <div className="aspect-[4/5] bg-[#EBE4D8] overflow-hidden lg:sticky lg:top-32">
               <img src={product.images?.[0]} alt={product.name} className="w-full h-full object-cover" />
             </div>
           </motion.div>
 
-          {/* Product Info & Form */}
-          <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="space-y-6">
+          {/* Product Info */}
+          <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6, delay: 0.2 }} className="space-y-8">
             <div>
               <span className="text-xs tracking-[0.3em] uppercase text-[#A88D4B] block mb-3">{product.type}</span>
               <h1 className="font-serif text-4xl text-[#0E2A47] mb-4">{product.name}</h1>
-              <p className="text-2xl font-serif text-[#0E2A47] mb-4">From {formatPrice(product.base_price)}</p>
+              <p className="text-3xl font-serif text-[#0E2A47] mb-6">From {formatPrice(product.base_price)}</p>
+              <p className="text-[#2B2B2B]/70 leading-relaxed text-base">{product.description}</p>
             </div>
 
-            <div key={formKey} className="space-y-4">
-
-              {/* Tailor selector */}
-              <div className="space-y-2">
-                <Label>Select Tailor *</Label>
-                <Select value={selectedTailorName} onValueChange={setSelectedTailorName}>
-                  <SelectTrigger><SelectValue placeholder="Choose your tailor" /></SelectTrigger>
-                  <SelectContent>
-                    {tailors.map(t => (
-                      <SelectItem key={t.id} value={t.name}>{t.name} — {t.style_focus}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Features */}
+            {product.features && (
+              <div>
+                <h3 className="text-xs tracking-[0.3em] uppercase text-[#A88D4B] mb-4">Included Features</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {product.features.map((feature, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 bg-white border border-[#EBE4D8]">
+                      <Award className="w-4 h-4 text-[#A88D4B] flex-shrink-0" />
+                      <span className="text-sm text-[#0E2A47]">{feature}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
+            )}
 
-              {/* Tailor details panel */}
-              <AnimatePresence mode="wait">
-                {selectedTailor && <TailorDetailsCard key={selectedTailor.id} tailor={selectedTailor} />}
-              </AnimatePresence>
-
-              {/* Fabric selector */}
-              <div className="space-y-2">
-                <Label>Select Fabric *</Label>
-                <Select value={selectedFabricName} onValueChange={setSelectedFabricName}>
-                  <SelectTrigger><SelectValue placeholder="Choose your fabric" /></SelectTrigger>
-                  <SelectContent>
-                    {fabrics.map(f => (
-                      <SelectItem key={f.id} value={f.name}>{f.name} — {f.price_tier}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Care */}
+            {product.care && (
+              <div className="flex items-start gap-3 p-4 bg-white border border-[#EBE4D8]">
+                <Shield className="w-5 h-5 text-[#A88D4B] flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-xs tracking-[0.2em] uppercase text-[#A88D4B] mb-1">Care Instructions</p>
+                  <p className="text-sm text-[#2B2B2B]/70">{product.care}</p>
+                </div>
               </div>
+            )}
 
-              {/* Fabric details panel */}
-              <AnimatePresence mode="wait">
-                {selectedFabric && <FabricDetailsCard key={selectedFabric.id} fabric={selectedFabric} />}
-              </AnimatePresence>
-
-              <div className="space-y-2">
-                <Label>Notes</Label>
-                <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any specific requests..." rows={2} />
+            {/* Trust badges */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center p-3 bg-white border border-[#EBE4D8]">
+                <Ruler className="w-5 h-5 text-[#A88D4B] mx-auto mb-1" />
+                <p className="text-[10px] tracking-[0.15em] uppercase text-[#0E2A47]">Made to Measure</p>
+              </div>
+              <div className="text-center p-3 bg-white border border-[#EBE4D8]">
+                <Award className="w-5 h-5 text-[#A88D4B] mx-auto mb-1" />
+                <p className="text-[10px] tracking-[0.15em] uppercase text-[#0E2A47]">Master Crafted</p>
+              </div>
+              <div className="text-center p-3 bg-white border border-[#EBE4D8]">
+                <Shield className="w-5 h-5 text-[#A88D4B] mx-auto mb-1" />
+                <p className="text-[10px] tracking-[0.15em] uppercase text-[#0E2A47]">Guaranteed Fit</p>
               </div>
             </div>
+          </motion.div>
+        </div>
 
-            {/* Measurements */}
+        {/* ── Divider ── */}
+        <motion.div
+          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+          className="flex items-center gap-6 mb-16"
+        >
+          <div className="flex-1 h-px bg-[#EBE4D8]" />
+          <div className="text-center px-4">
+            <p className="text-xs tracking-[0.3em] uppercase text-[#A88D4B]">Customise Your Order</p>
+            <p className="text-sm text-[#2B2B2B]/50 mt-1">Select your tailor, fabric and measurements below</p>
+          </div>
+          <div className="flex-1 h-px bg-[#EBE4D8]" />
+        </motion.div>
+
+        {/* ── SECTION 2: Order Form ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
+          className="max-w-2xl mx-auto"
+        >
+          {/* KEY FIX: measurements block is INSIDE key={formKey} so it resets with the rest of the form */}
+          <div key={formKey} className="space-y-4">
+
+            {/* Tailor */}
+            <div className="space-y-2">
+              <Label>Select Tailor *</Label>
+              <Select value={selectedTailorName} onValueChange={setSelectedTailorName}>
+                <SelectTrigger><SelectValue placeholder="Choose your tailor" /></SelectTrigger>
+                <SelectContent>{tailors.map(t => (<SelectItem key={t.id} value={t.name}>{t.name} — {t.style_focus}</SelectItem>))}</SelectContent>
+              </Select>
+            </div>
+            <AnimatePresence mode="wait">
+              {selectedTailor && <TailorDetailsCard key={selectedTailor.id} tailor={selectedTailor} />}
+            </AnimatePresence>
+
+            {/* Fabric */}
+            <div className="space-y-2">
+              <Label>Select Fabric *</Label>
+              <Select value={selectedFabricName} onValueChange={setSelectedFabricName}>
+                <SelectTrigger><SelectValue placeholder="Choose your fabric" /></SelectTrigger>
+                <SelectContent>{fabrics.map(f => (<SelectItem key={f.id} value={f.name}>{f.name} — {f.price_tier}</SelectItem>))}</SelectContent>
+              </Select>
+            </div>
+            <AnimatePresence mode="wait">
+              {selectedFabric && <FabricDetailsCard key={selectedFabric.id} fabric={selectedFabric} />}
+            </AnimatePresence>
+
+            {/* Notes */}
+            <div className="space-y-2">
+              <Label>Notes</Label>
+              <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any specific requests..." rows={2} />
+            </div>
+
+            {/* ── Measurements — inside key={formKey} ── */}
             <div className="bg-white border border-[#EBE4D8] p-6">
               <div className="mb-4">
-                <h3 className="font-serif text-lg text-[#0E2A47] mb-2">Your Measurements *</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-serif text-lg text-[#0E2A47]">Your Measurements *</h3>
+                  <a href="#/MeasurementGuide" className="flex items-center gap-1.5 text-xs text-[#A88D4B] border-b border-[#A88D4B]/40 pb-0.5 hover:border-[#A88D4B] transition-colors">
+                    <span>📏</span> How to measure?
+                  </a>
+                </div>
                 <div className="flex items-center justify-between text-sm text-[#2B2B2B]/60 mb-3">
                   <span>Step {measurementStep + 1} of {measurementSteps.length}</span>
                   <span>{measurementSteps[measurementStep].title}</span>
@@ -416,7 +393,7 @@ export default function ProductDetail() {
 
               <div className="flex gap-3 mt-6">
                 {measurementStep > 0 && (
-                  <Button variant="outline" onClick={() => { setMeasurementStep(prev => prev - 1); setMeasurementErrors({}); }} className="flex items-center gap-2">
+                  <Button variant="outline" onClick={() => { setMeasurementStep(p => p - 1); setMeasurementErrors({}); }} className="flex items-center gap-2">
                     <ChevronLeft className="w-4 h-4" /> Back
                   </Button>
                 )}
@@ -425,19 +402,16 @@ export default function ProductDetail() {
                     Next <ChevronRight className="w-4 h-4" />
                   </Button>
                 ) : (
-                  <Button
-                    onClick={handleAddToCart}
-                    disabled={isAdding}
-                    className={`ml-auto flex items-center gap-2 transition-all duration-300 ${addedToCart ? 'bg-green-600 hover:bg-green-600 text-white' : 'bg-[#0E2A47] text-[#F5F1E8]'}`}
-                  >
+                  <Button onClick={handleAddToCart} disabled={isAdding} className={`ml-auto flex items-center gap-2 transition-all duration-300 ${addedToCart ? 'bg-green-600 hover:bg-green-600 text-white' : 'bg-[#0E2A47] text-[#F5F1E8]'}`}>
                     {addedToCart ? <><CheckCircle className="w-5 h-5" /> Added to Cart!</> : isAdding ? 'Adding...' : <><ShoppingCart className="w-5 h-5" /> Add to Cart</>}
                   </Button>
                 )}
               </div>
             </div>
 
-          </motion.div>
-        </div>
+          </div>{/* end key={formKey} */}
+        </motion.div>
+
       </div>
     </motion.div>
   );
