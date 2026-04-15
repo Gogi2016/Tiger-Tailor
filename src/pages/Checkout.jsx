@@ -7,27 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Upload, CheckCircle, Copy, PackageCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/lib/supabaseClient';
 
-// ─────────────────────────────────────────────────────────────────
-// EmailJS credentials
-// ─────────────────────────────────────────────────────────────────
 const EMAILJS_SERVICE_ID  = 'service_4pwayaq';
 const EMAILJS_TEMPLATE_ID = 'template_2lw9bty';
 const EMAILJS_PUBLIC_KEY  = 'U8pqPF9DulJ3KPNo2';
-
-const ADMIN_EMAIL = 'vuyokazigogi@gmail.com';
-
-// ImgBB API key — https://api.imgbb.com (free)
-const IMGBB_API_KEY = '8b259d62120db9611d94904096f197a0';
-
-// ─────────────────────────────────────────────────────────────────
-// ACTION REQUIRED IN EMAILJS (one-time fix, takes 10 seconds):
-//
-//   1. Go to Email Templates → open your template
-//   2. On the RIGHT side, find the "To Email" field
-//   3. Replace any hardcoded email with: {{to_email}}
-//   4. Click Save
-// ─────────────────────────────────────────────────────────────────
+const ADMIN_EMAIL         = 'vuyokazigogi@gmail.com';
+const IMGBB_API_KEY       = '8b259d62120db9611d94904096f197a0';
 
 async function sendEmail({ toEmail, name, replyTo, subject, message }) {
   const res = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
@@ -37,50 +23,79 @@ async function sendEmail({ toEmail, name, replyTo, subject, message }) {
       service_id:  EMAILJS_SERVICE_ID,
       template_id: EMAILJS_TEMPLATE_ID,
       user_id:     EMAILJS_PUBLIC_KEY,
-      template_params: {
-        to_email: toEmail,
-        name:     name,
-        email:    replyTo,
-        title:    subject,
-        message:  message,
-      },
+      template_params: { to_email: toEmail, name, email: replyTo, title: subject, message },
     }),
   });
-
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error('EmailJS ' + res.status + ': ' + text);
-  }
+  if (!res.ok) throw new Error('EmailJS ' + res.status + ': ' + await res.text());
 }
 
-// Uploads proof of payment to ImgBB and returns a public URL
 async function uploadProofToImgbb(base64DataUrl) {
   try {
     const base64 = base64DataUrl.split(',')[1];
     if (!base64) return null;
-
     const formData = new FormData();
     formData.append('key', IMGBB_API_KEY);
     formData.append('image', base64);
-    formData.append('expiration', 15552000); // 6 months
-
-    const res = await fetch('https://api.imgbb.com/1/upload', {
-      method: 'POST',
-      body: formData,
-    });
-
+    formData.append('expiration', 15552000);
+    const res = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: formData });
     if (!res.ok) return null;
     const data = await res.json();
     return data?.data?.url || null;
-  } catch {
-    return null;
-  }
+  } catch { return null; }
+}
+
+async function saveOrderToSupabase({ reference, customerName, customerEmail, customerPhone, total, cartItems, proofFileName, proofUrl }) {
+  const { data: order, error: orderError } = await supabase
+    .from('orders')
+    .insert({
+      reference,
+      status:          'Pending Payment',
+      customer_name:   customerName,
+      customer_email:  customerEmail,
+      customer_phone:  customerPhone,
+      total,
+      deposit:         total * 0.5,
+      proof_file_name: proofFileName,
+      proof_url:       proofUrl,
+    })
+    .select()
+    .single();
+
+  if (orderError) throw new Error('Failed to save order: ' + orderError.message);
+
+  const items = cartItems.map(item => ({
+    order_id:       order.id,
+    product_name:   item.product_name,
+    product_type:   item.product_type,
+    base_price:     item.base_price,
+    quantity:       item.quantity,
+    tailor:         item.customizations?.tailor         || null,
+    fabric:         item.customizations?.fabric         || null,
+    notes:          item.customizations?.notes          || null,
+    chest:          item.measurements?.chest            || null,
+    waist:          item.measurements?.waist            || null,
+    hips:           item.measurements?.hips             || null,
+    shoulder_width: item.measurements?.shoulder_width   || null,
+    neck:           item.measurements?.neck             || null,
+    sleeve_length:  item.measurements?.sleeve_length    || null,
+    jacket_length:  item.measurements?.jacket_length    || null,
+    inseam:         item.measurements?.inseam           || null,
+    outseam:        item.measurements?.outseam          || null,
+    thigh:          item.measurements?.thigh            || null,
+    height:         item.measurements?.height           || null,
+    weight:         item.measurements?.weight           || null,
+    posture_notes:  item.measurements?.posture_notes    || null,
+  }));
+
+  const { error: itemsError } = await supabase.from('order_items').insert(items);
+  if (itemsError) throw new Error('Failed to save order items: ' + itemsError.message);
+
+  return order;
 }
 
 export default function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
-
   const { cartItems, customerEmail, customerPhone, customerName, total } = location.state || {};
 
   const [proofOfPayment, setProofOfPayment] = useState(null);
@@ -92,136 +107,87 @@ export default function Checkout() {
   const reference = useRef('TH' + Date.now().toString().slice(-8)).current;
 
   useEffect(() => {
-    if (!cartItems || cartItems.length === 0) {
-      navigate(createPageUrl('Cart'));
-    }
+    if (!cartItems || cartItems.length === 0) navigate(createPageUrl('Cart'));
   }, [cartItems, navigate]);
 
   const formatPrice = (price) =>
-    new Intl.NumberFormat('en-ZA', {
-      style: 'currency', currency: 'ZAR', minimumFractionDigits: 0,
-    }).format(price);
+    new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR', minimumFractionDigits: 0 }).format(price);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setIsUploading(true);
     const reader = new FileReader();
-    reader.onload = () => {
-      setProofOfPayment(reader.result);
-      setProofFileName(file.name);
-      toast.success('Proof of payment ready ✓');
-      setIsUploading(false);
-    };
-    reader.onerror = () => {
-      toast.error('Failed to read file. Please try again.');
-      setIsUploading(false);
-    };
+    reader.onload  = () => { setProofOfPayment(reader.result); setProofFileName(file.name); toast.success('Proof of payment ready ✓'); setIsUploading(false); };
+    reader.onerror = () => { toast.error('Failed to read file.'); setIsUploading(false); };
     reader.readAsDataURL(file);
   };
 
   const handleSubmitOrder = async () => {
-    if (!proofOfPayment) {
-      toast.error('Please upload proof of payment');
-      return;
-    }
-
+    if (!proofOfPayment) { toast.error('Please upload proof of payment'); return; }
     setIsSubmitting(true);
-
     try {
-      // Upload proof to ImgBB for shareable link in email
+      // 1. Upload proof image to get shareable link
       let proofUrl = null;
-      try {
-        proofUrl = await uploadProofToImgbb(proofOfPayment);
-      } catch (imgErr) {
-        console.warn('ImgBB upload failed, continuing without image link:', imgErr);
-      }
+      try { proofUrl = await uploadProofToImgbb(proofOfPayment); } catch {}
 
-      // Shared order details block
+      // 2. Save order to Supabase database
+      await saveOrderToSupabase({ reference, customerName, customerEmail, customerPhone, total, cartItems, proofFileName, proofUrl });
+
+      // 3. Build order details text
       const orderDetails = cartItems.map((item, i) =>
         'Item ' + (i + 1) + ': ' + item.product_name + ' (' + item.product_type + ')\n' +
         '  Tailor      : ' + (item.customizations?.tailor  || 'Not specified') + '\n' +
         '  Fabric      : ' + (item.customizations?.fabric  || 'Not specified') + '\n' +
         '  Price       : ' + formatPrice(item.base_price * item.quantity) + '\n' +
-        '  Measurements: Chest '  + (item.measurements?.chest   || 'N/A') + 'cm, ' +
-                        'Waist '  + (item.measurements?.waist   || 'N/A') + 'cm, ' +
-                        'Height ' + (item.measurements?.height  || 'N/A') + 'cm' +
-        (item.customizations?.notes ? '\n  Notes       : ' + item.customizations.notes : '')
+        '  Measurements: Chest '  + (item.measurements?.chest  || 'N/A') + 'cm, ' +
+                        'Waist '  + (item.measurements?.waist  || 'N/A') + 'cm, ' +
+                        'Height ' + (item.measurements?.height || 'N/A') + 'cm' +
+        (item.customizations?.notes ? '\n  Notes: ' + item.customizations.notes : '')
       ).join('\n\n');
 
-      // ── CUSTOMER EMAIL ──────────────────────────────────────────
-      const customerMessage =
-        'Dear ' + customerName + ',\n\n' +
-        'Thank you for your order! 🎉\n\n' +
-        'Your order has been successfully placed and we have received your payment proof.\n\n' +
-        'Your Order Details:\n' +
-        '──────────────────────────────\n' +
-        orderDetails + '\n' +
-        '──────────────────────────────\n\n' +
-        'Order Reference : ' + reference + '\n' +
-        'Total           : ' + formatPrice(total) + '\n\n' +
-        'Your Contact Details:\n' +
-        'Email : ' + customerEmail + '\n' +
-        'Phone : ' + customerPhone + '\n\n' +
-        'Our team will review your payment and contact you within 24–48 hours to confirm the details and production timeline.\n\n' +
-        'We appreciate your business and look forward to crafting your bespoke garments.\n\n' +
-        'Best regards,\n' +
-        'Tiger Hunt Team\n\n' +
-        'Contact Us:\n' +
-        'Phone : +27 11 234 5678\n' +
-        'Email : hello@tigerhunt.co.za';
-
+      // 4. Customer confirmation email
       await sendEmail({
-        toEmail:  customerEmail,
-        name:     'Tiger Hunt',
-        replyTo:  'hello@tigerhunt.co.za',
-        subject:  'Order Confirmed #' + reference + ' — Tiger Hunt',
-        message:  customerMessage,
+        toEmail: customerEmail,
+        name:    'Tiger Hunt',
+        replyTo: 'hello@tigerhunt.co.za',
+        subject: 'Order Confirmed #' + reference + ' — Tiger Hunt',
+        message:
+          'Dear ' + customerName + ',\n\n' +
+          'Thank you for your order! 🎉\n\n' +
+          'Your Order Details:\n──────────────────────────────\n' +
+          orderDetails + '\n──────────────────────────────\n\n' +
+          'Order Reference : ' + reference + '\n' +
+          'Total           : ' + formatPrice(total) + '\n\n' +
+          'Track your order anytime — visit our website and go to Track Order.\n' +
+          'Use your reference number: ' + reference + '\n\n' +
+          'Our team will review your payment within 24–48 hours.\n\n' +
+          'Best regards,\nTiger Hunt Team\n' +
+          'Phone: +27 11 234 5678 | hello@tigerhunt.co.za',
       });
 
-      // ── ADMIN EMAIL ─────────────────────────────────────────────
-      const adminMessage =
-        '🛎️ NEW ORDER RECEIVED — Action Required\n\n' +
-        'A new order has been placed on Tiger Hunt.\n' +
-        'Please review the payment proof and confirm with the customer.\n\n' +
-        '──────────────────────────────\n' +
-        'CUSTOMER DETAILS\n' +
-        '──────────────────────────────\n' +
-        'Name  : ' + customerName + '\n' +
-        'Email : ' + customerEmail + '\n' +
-        'Phone : ' + customerPhone + '\n\n' +
-        '──────────────────────────────\n' +
-        'ORDER DETAILS\n' +
-        '──────────────────────────────\n' +
-        orderDetails + '\n' +
-        '──────────────────────────────\n\n' +
-        'Order Reference : ' + reference + '\n' +
-        'Total           : ' + formatPrice(total) + '\n' +
-        'Deposit (50%)   : ' + formatPrice(total * 0.5) + '\n\n' +
-        'Payment Proof   : ' + proofFileName + '\n' +
-        (proofUrl
-          ? 'View Proof      : ' + proofUrl + '\n'
-          : '(Image could not be uploaded — customer will email directly)\n') +
-        '\n' +
-        '──────────────────────────────\n' +
-        'WHAT TO DO NEXT\n' +
-        '──────────────────────────────\n' +
-        '1. Verify the proof of payment\n' +
-        '2. Contact the customer directly:\n' +
-        '   Email: ' + customerEmail + '\n' +
-        '   Phone: ' + customerPhone + '\n' +
-        '3. Confirm production timeline (4–6 weeks)\n\n' +
-        'Tiger Hunt Automated Order System';
-
+      // 5. Admin notification email
       await sendEmail({
-        toEmail:  ADMIN_EMAIL,
-        name:     customerName,
-        replyTo:  customerEmail,
-        subject:  '🛎️ New Order [' + reference + '] from ' + customerName + ' — ' + formatPrice(total),
-        message:  adminMessage,
+        toEmail: ADMIN_EMAIL,
+        name:    customerName,
+        replyTo: customerEmail,
+        subject: '🛎️ New Order [' + reference + '] from ' + customerName + ' — ' + formatPrice(total),
+        message:
+          '🛎️ NEW ORDER RECEIVED\n\n' +
+          'Customer : ' + customerName + '\n' +
+          'Email    : ' + customerEmail + '\n' +
+          'Phone    : ' + customerPhone + '\n\n' +
+          'ORDER DETAILS\n──────────────────────────────\n' +
+          orderDetails + '\n──────────────────────────────\n\n' +
+          'Reference : ' + reference + '\n' +
+          'Total     : ' + formatPrice(total) + '\n' +
+          'Deposit   : ' + formatPrice(total * 0.5) + '\n' +
+          'Proof     : ' + proofFileName + '\n' +
+          (proofUrl ? 'View      : ' + proofUrl + '\n' : '') +
+          '\nManage this order in your admin dashboard.',
       });
 
-      // Clear cart
+      // 6. Clear cart
       localStorage.removeItem('cart');
       window.dispatchEvent(new Event('cartUpdated'));
 
@@ -231,57 +197,44 @@ export default function Checkout() {
 
     } catch (error) {
       console.error('Order error:', error);
-      toast.error('Could not send order: ' + error.message + '. Please contact hello@tigerhunt.co.za directly.');
+      toast.error('Could not place order: ' + error.message + '. Please contact hello@tigerhunt.co.za');
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-    toast.success('Copied!');
-  };
+  const copyToClipboard = (text) => { navigator.clipboard.writeText(text); toast.success('Copied!'); };
 
   if (!cartItems) return null;
 
-  // ── Success screen ──────────────────────────────────────────────
   if (orderComplete) {
     return (
       <div className="min-h-screen bg-[#F5F1E8] pt-32 pb-16 flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
           className="bg-white border border-[#EBE4D8] p-12 max-w-md w-full text-center mx-6"
         >
           <PackageCheck className="w-16 h-16 text-[#A88D4B] mx-auto mb-6" />
           <h2 className="font-serif text-3xl text-[#0E2A47] mb-4">Order Placed!</h2>
-          <p className="text-[#2B2B2B]/70 mb-3">
-            Thank you, <strong>{customerName}</strong>. Your order has been received.
-          </p>
-          <p className="text-sm text-[#2B2B2B]/60">
+          <p className="text-[#2B2B2B]/70 mb-3">Thank you, <strong>{customerName}</strong>. Your order has been received.</p>
+          <p className="text-sm text-[#2B2B2B]/60 mb-4">
             Reference: <strong>{reference}</strong><br /><br />
             A confirmation has been sent to <strong>{customerEmail}</strong>.<br />
             We'll be in touch within 24–48 hours.
           </p>
-          <p className="text-xs text-[#2B2B2B]/40 mt-6">Redirecting you home shortly…</p>
+          <p className="text-xs text-[#2B2B2B]/40">Redirecting you home shortly…</p>
         </motion.div>
       </div>
     );
   }
 
-  // ── Main page ───────────────────────────────────────────────────
   return (
     <div className="min-h-screen bg-[#F5F1E8] pt-32 pb-16">
       <div className="max-w-[800px] mx-auto px-6">
         <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
           <h1 className="font-serif text-4xl md:text-5xl text-[#0E2A47] mb-4">Complete Payment</h1>
-          <p className="text-[#2B2B2B]/70 mb-12">
-            Transfer the amount below to our bank account, then upload your proof of payment.
-          </p>
+          <p className="text-[#2B2B2B]/70 mb-12">Transfer the amount below to our bank account, then upload your proof of payment.</p>
 
           <div className="space-y-6">
-            {/* Bank Details */}
             <div className="bg-white border border-[#EBE4D8] p-8">
               <h2 className="font-serif text-2xl text-[#0E2A47] mb-6">Bank Details</h2>
               <div className="space-y-4">
@@ -309,49 +262,29 @@ export default function Checkout() {
               </div>
             </div>
 
-            {/* Upload Proof */}
             <div className="bg-white border border-[#EBE4D8] p-8">
               <h2 className="font-serif text-2xl text-[#0E2A47] mb-6">Upload Proof of Payment</h2>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="proof" className="text-[#0E2A47] mb-2 block">
-                    Upload your payment slip or screenshot *
-                  </Label>
-                  <Input
-                    id="proof"
-                    type="file"
-                    onChange={handleFileChange}
-                    accept="image/*,.pdf"
-                    className="border-[#EBE4D8]"
-                    disabled={isUploading}
-                  />
+                  <Label htmlFor="proof" className="text-[#0E2A47] mb-2 block">Upload your payment slip or screenshot *</Label>
+                  <Input id="proof" type="file" onChange={handleFileChange} accept="image/*,.pdf" className="border-[#EBE4D8]" disabled={isUploading} />
                   {isUploading && <p className="text-sm text-[#A88D4B] mt-2">Reading file…</p>}
                   {proofOfPayment && !isUploading && (
                     <div className="flex items-center gap-2 mt-2 text-sm text-green-600">
-                      <CheckCircle className="w-4 h-4" />
-                      <span>{proofFileName} — ready to submit</span>
+                      <CheckCircle className="w-4 h-4" /><span>{proofFileName} — ready to submit</span>
                     </div>
                   )}
                 </div>
-
                 <Button
                   onClick={handleSubmitOrder}
                   disabled={!proofOfPayment || isSubmitting || isUploading}
-                  className="w-full bg-[#0E2A47] hover:bg-[#0E2A47]/90 text-[#F5F1E8] py-6 text-base flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#0E2A47] hover:bg-[#0E2A47]/90 text-[#F5F1E8] py-6 text-base flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />
-                      Sending Order…
-                    </>
-                  ) : (
-                    <>Complete Order <Upload className="w-5 h-5" /></>
-                  )}
+                  {isSubmitting
+                    ? <><span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />Sending Order…</>
+                    : <>Complete Order <Upload className="w-5 h-5" /></>}
                 </Button>
-
-                <p className="text-xs text-[#2B2B2B]/50 text-center">
-                  Your order will be processed once we verify your payment
-                </p>
+                <p className="text-xs text-[#2B2B2B]/50 text-center">Your order will be processed once we verify your payment</p>
               </div>
             </div>
           </div>

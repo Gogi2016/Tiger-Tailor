@@ -9,6 +9,8 @@ const exploreLinks = [
   { label: 'Our Fabrics',       page: 'Fabrics' },
   { label: 'Measurement Guide', page: 'MeasurementGuide' },
   { label: 'Book Consultation', page: 'Contact' },
+  { label: 'Order Tracking',    page: 'OrderTracking' },
+  { label: 'Admin Panel',       page: 'Admin' },
 ];
 
 const legalLinks = [

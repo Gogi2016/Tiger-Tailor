@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { format } from "date-fns";
-import { Calendar as CalendarIcon, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Phone, Mail, Clock, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Contact() {
@@ -60,6 +60,27 @@ export default function Contact() {
           </p>
         </motion.div>
 
+        {/* Office Visit Notice */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.15 }}
+          className="max-w-3xl mx-auto mb-12"
+        >
+          <div className="flex items-start gap-4 bg-[#0E2A47]/5 border border-[#0E2A47]/15 px-6 py-5">
+            <Info className="w-5 h-5 text-[#A88D4B] mt-0.5 shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-[#0E2A47] mb-1">In-Person Visits Only</p>
+              <p className="text-sm text-[#2B2B2B]/70 leading-relaxed">
+                The booking form and phone line below are exclusively for clients who wish to 
+                visit us at our studio. If you'd like to come in for a fitting, measurement or 
+                consultation, please use the form or give us a call to arrange your appointment. 
+                We look forward to welcoming you.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           {/* Contact Info */}
           <motion.div
@@ -100,6 +121,7 @@ export default function Contact() {
                     <a href="tel:+27112345678" className="text-[#2B2B2B]/70 text-sm hover:text-[#0E2A47]">
                       +27 11 234 5678
                     </a>
+                    <p className="text-[#2B2B2B]/45 text-xs mt-1">For studio visit bookings only</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -132,6 +154,16 @@ export default function Contact() {
             className="lg:col-span-2"
           >
             <form onSubmit={handleSubmit} className="bg-white p-8 md:p-10 border border-[#EBE4D8]">
+
+              {/* Form header note */}
+              <div className="mb-8 pb-6 border-b border-[#EBE4D8]">
+                <h2 className="font-serif text-xl text-[#0E2A47] mb-1">Book a Studio Visit</h2>
+                <p className="text-sm text-[#2B2B2B]/60">
+                  Please complete the form below to arrange your in-person appointment at our Sandton studio. 
+                  A member of our team will confirm your booking within 24 hours.
+                </p>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div className="space-y-2">
                   <label className="text-sm text-[#0E2A47]">Full Name *</label>
@@ -225,7 +257,7 @@ export default function Contact() {
                 disabled={isSubmitting}
                 className="w-full bg-[#0E2A47] hover:bg-[#0E2A47]/90 text-[#F5F1E8] py-6 text-base"
               >
-                {isSubmitting ? 'Sending...' : 'Request Consultation'}
+                {isSubmitting ? 'Sending...' : 'Request Studio Appointment'}
               </Button>
 
               <p className="text-xs text-[#2B2B2B]/50 text-center mt-4">

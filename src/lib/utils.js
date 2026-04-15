@@ -25,6 +25,8 @@ export const createPageUrl = (page) => {
     'Terms',
     'Shipping',
     'Returns',
+    'OrderTracking',
+    'Admin',
   ];
 
   if (page === 'Home') return '/';
