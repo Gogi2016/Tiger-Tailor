@@ -61,7 +61,6 @@ import Checkout from './pages/Checkout';
 import Tailors from './pages/Tailors';
 import Fabrics from './pages/Fabrics';
 import MeasurementGuide from './pages/MeasurementGuide';
-import { m } from 'framer-motion';
 import OrderTracking from './pages/OrderTracking';
 import Admin from './pages/Admin';
 
