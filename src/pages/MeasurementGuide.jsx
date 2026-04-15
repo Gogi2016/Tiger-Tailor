@@ -467,8 +467,7 @@ export default function MeasurementGuide() {
               </p>
               <p style={{ fontFamily: 'sans-serif', fontSize: 'clamp(13px, 2vw, 14px)', color: 'rgba(255,255,255,0.8)', lineHeight: 1.75, marginBottom: 14 }}>
                 If you're new to measuring yourself, it might feel a bit tricky at first — but don't worry, it gets easier with practice.
-                The most important
-                 thing is to be consistent and take your time. If you have any doubts, it's better to take multiple measurements and use the average.
+                The most important thing is to be consistent and take your time. If you have any doubts, it's better to take multiple measurements and use the average.
                 Remember, these measurements are the blueprint for your custom garment, so accuracy really helps us achieve the best fit possible.
               </p>
               <p style={{ fontFamily: 'sans-serif', fontSize: 11, color: 'rgba(255,255,255,0.3)', margin: 0 }}>
