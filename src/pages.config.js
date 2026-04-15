@@ -63,6 +63,7 @@ import Fabrics from './pages/Fabrics';
 import MeasurementGuide from './pages/MeasurementGuide';
 import OrderTracking from './pages/OrderTracking';
 import Admin from './pages/Admin';
+import { m } from 'framer-motion';
 
 export const PAGES = {
     "Home": Home,
