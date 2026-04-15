@@ -108,6 +108,7 @@ function BodyDiagram({ activeId, onSelect }) {
     { id: 'inseam',         cx: 87,  cy: 174, label: 'Inseam' },
     { id: 'outseam',        cx: 114, cy: 164, label: 'Outseam' },
     { id: 'height',         cx: 66,  cy: 100, label: 'Height' },
+    
   ];
 
   return (

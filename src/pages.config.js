@@ -54,7 +54,7 @@ import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import Shipping from './pages/Shipping';
 import Returns from './pages/Returns';
-import __Layout from './Layout.jsx';
+import __Layout from './Layout';
 import Cart from './pages/Cart';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
