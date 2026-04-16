@@ -15,16 +15,12 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [cartCount, setCartCount] = useState(0);
 
-  // Read cart count from localStorage and keep it in sync
   useEffect(() => {
     const updateCartCount = () => {
       const items = JSON.parse(localStorage.getItem('cart') || '[]');
       setCartCount(items.length);
     };
-
     updateCartCount();
-
-    // Listen for storage events (cross-tab) and a custom event for same-tab updates
     window.addEventListener('storage', updateCartCount);
     window.addEventListener('cartUpdated', updateCartCount);
     return () => {
@@ -52,14 +48,18 @@ export default function Header() {
         animate={{ y: 0 }}
         transition={{ duration: 0.6 }}
         className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
-          isScrolled ? 'bg-[#F5F1E8]/95 backdrop-blur-md shadow-sm' : 'bg-transparent'
+          isScrolled
+            ? 'bg-[#F5F1E8]/95 backdrop-blur-md shadow-sm'
+            : 'bg-gradient-to-b from-[#0E2A47]/60 to-transparent'
         }`}
       >
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="flex items-center justify-between h-20 md:h-24">
             <Link
               to={createPageUrl('Home')}
-              className="font-serif text-2xl md:text-3xl text-[#0E2A47] tracking-tight"
+              className={`font-serif text-2xl md:text-3xl tracking-tight transition-colors ${
+                isScrolled ? 'text-[#0E2A47]' : 'text-[#F5F1E8]'
+              }`}
             >
               Tiger Hunt
             </Link>
@@ -69,7 +69,11 @@ export default function Header() {
                 <Link
                   key={link.label}
                   to={link.href}
-                  className="text-sm tracking-wide text-[#2B2B2B]/80 hover:text-[#0E2A47] transition-colors relative group"
+                  className={`text-sm tracking-wide transition-colors relative group ${
+                    isScrolled
+                      ? 'text-[#2B2B2B]/80 hover:text-[#0E2A47]'
+                      : 'text-[#F5F1E8]/90 hover:text-[#F5F1E8]'
+                  }`}
                 >
                   {link.label}
                   <span className="absolute left-0 -bottom-1 w-0 h-px bg-[#A88D4B] group-hover:w-full transition-all duration-300" />
@@ -80,7 +84,11 @@ export default function Header() {
             <div className="flex items-center gap-4">
               <Link
                 to={createPageUrl('Cart')}
-                className="relative p-2 text-[#0E2A47] hover:text-[#A88D4B] transition-colors"
+                className={`relative p-2 transition-colors ${
+                  isScrolled
+                    ? 'text-[#0E2A47] hover:text-[#A88D4B]'
+                    : 'text-[#F5F1E8] hover:text-[#A88D4B]'
+                }`}
               >
                 <ShoppingCart className="w-5 h-5" />
                 {cartCount > 0 && (
@@ -92,7 +100,9 @@ export default function Header() {
 
               <button
                 onClick={() => setIsMobileMenuOpen(true)}
-                className="md:hidden p-2 text-[#0E2A47]"
+                className={`md:hidden p-2 transition-colors ${
+                  isScrolled ? 'text-[#0E2A47]' : 'text-[#F5F1E8]'
+                }`}
                 aria-label="Open menu"
               >
                 <Menu className="w-6 h-6" />
