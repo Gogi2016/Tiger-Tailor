@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/ui/button";
@@ -6,22 +6,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ShoppingCart, ChevronRight, ChevronLeft, CheckCircle, Clock, Star, Users, Scissors, MapPin, Sparkles, Shield, Ruler, Award } from 'lucide-react';
+import { ShoppingCart, ChevronRight, ChevronLeft, CheckCircle, Clock, Star, Users, Scissors, MapPin, Sparkles, Shield, Ruler, Award, Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { toast } from 'sonner';
 
 const allProducts = [
-  { id: 1, name: "The Classic Two-Piece", type: "suit", base_price: 15000, images: ["https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=750&fit=crop"], description: "A timeless silhouette refined for the modern professional. The Classic Two-Piece is the cornerstone of any distinguished wardrobe — built to carry you through boardrooms, celebrations, and everything in between.", features: ["Full canvas construction", "Pick stitching on lapels", "Working buttonholes", "Surgeon's cuffs"], care: "Dry clean only. Store on a wide-shouldered hanger." },
-  { id: 2, name: "The Executive Three-Piece", type: "suit", base_price: 22000, images: ["https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&h=750&fit=crop"], description: "Authority, elegance, and presence — the three-piece suit is a statement of intent. The matching waistcoat adds a layer of sophistication that sets you apart before you say a word.", features: ["Matching waistcoat included", "Half-canvas construction", "Bespoke lining options", "Horn buttons"], care: "Dry clean only. Rotate with other suits." },
-  { id: 3, name: "The Director's Suit", type: "suit", base_price: 28000, images: ["https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=600&h=750&fit=crop"], description: "Designed for those who shape decisions. The Director's Suit commands the room with a structured shoulder and clean trouser line — a garment that works as hard as you do.", features: ["Structured shoulder", "Double-pleated trousers", "Jetted chest pocket", "AMF stitching throughout"], care: "Dry clean only. Press with a damp cloth." },
-  { id: 4, name: "The Wedding Collection", type: "suit", base_price: 35000, images: ["https://images.unsplash.com/photo-1617137968427-85924c800a22?w=600&h=750&fit=crop"], description: "Your wedding day demands perfection. The Wedding Collection is crafted with extraordinary attention to detail — a garment you will cherish long after the celebration ends.", features: ["Hand-finished buttonholes", "Personalised monogram", "Peak or notch lapel", "Coordinated accessories available"], care: "Dry clean. Store in provided garment bag." },
-  { id: 5, name: "The Perfect White Shirt", type: "shirt", base_price: 3500, images: ["https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=600&h=750&fit=crop"], description: "No wardrobe is complete without the perfect white shirt. Ours is cut to sit impeccably under a jacket and stand alone with equal confidence.", features: ["Mother-of-pearl buttons", "Split yoke construction", "French seams", "Gauntlet cuffs"], care: "Machine wash 30°C. Iron while damp." },
-  { id: 6, name: "The Business Essential", type: "shirt", base_price: 2800, images: ["https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=600&h=750&fit=crop"], description: "The workhorse of the professional wardrobe. Crafted to hold its shape through back-to-back meetings and long travel days.", features: ["Wrinkle-resistant finish", "Reinforced collar", "Classic barrel cuffs", "Precise collar stays"], care: "Machine wash 30°C. Low iron." },
-  { id: 7, name: "The Linen Casual", type: "shirt", base_price: 3200, images: ["https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=750&fit=crop"], description: "Ease, warmth, and effortless style. The Linen Casual moves between smart-casual and resort wear with natural grace.", features: ["Pure linen construction", "Relaxed fit available", "Coconut shell buttons", "Curved hem"], care: "Hand wash or gentle cycle. Iron while damp." },
-  { id: 8, name: "The Overcoat", type: "coat", base_price: 18000, images: ["https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=750&fit=crop"], description: "Winter calls for substance. The Overcoat is built from heavyweight cloth to wrap you in warmth without sacrificing an ounce of refinement.", features: ["Heavyweight outer cloth", "Fully lined in silk-blend", "Fly front fastening", "Ticket pocket"], care: "Dry clean only. Brush after each wear." },
-  { id: 9, name: "The Trench", type: "coat", base_price: 16000, images: ["https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=750&fit=crop"], description: "Born from British military heritage and refined for city life. The Trench transitions from rain to shine with iconic elegance.", features: ["Waterproof outer layer", "Removable storm lining", "D-ring belt", "Gun flap detail"], care: "Dry clean only. Re-wax seasonally." },
-  { id: 10, name: "Oxford Brogues", type: "shoes", base_price: 8500, images: ["https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=600&h=750&fit=crop"], description: "Hand-crafted on a classic last, these brogues carry the soul of Northampton in every stitch. They will outlast trends and improve with age.", features: ["Goodyear welted sole", "Full-grain leather upper", "Leather insole", "Hand-finished edges"], care: "Polish regularly. Use cedar shoe trees." },
-  { id: 11, name: "Chelsea Boots", type: "shoes", base_price: 9500, images: ["https://images.unsplash.com/photo-1638247025967-b4e38f787b76?w=600&h=750&fit=crop"], description: "The Chelsea boot is the most versatile shoe in a man's wardrobe. Ours is built to last decades and worn to look better for it.", features: ["Elastic side gussets", "Goodyear welted", "Leather lining", "Stacked leather heel"], care: "Polish with matching cream. Condition leather seasonally." },
-  { id: 12, name: "Silk Pocket Square Set", type: "accessory", base_price: 1200, images: ["https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=600&h=750&fit=crop"], description: "The finishing touch that separates the dressed from the well-dressed. Each set is hand-rolled and finished with care.", features: ["100% pure silk", "Hand-rolled edges", "Set of three colourways", "Gift box included"], care: "Dry clean or hand wash cold. Press with cool iron." },
+  { id: 1, name: "The Classic Two-Piece", type: "suit", base_price: 15000, images: ["http://uncommonsmart.com/cdn/shop/files/Classic-Two-piece-Men-Suits-White-Blazer-and-Pants-Basic-Slim-Fit-Suit-Jacket-Wedding-Prom.webp?v=1718071075", "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&h=1000&fit=crop", "https://coofandy.com/cdn/shop/files/AMJ008669_GR-2_1400x.jpg?v=1708679572"], video: "https://www.youtube.com/shorts/SgasHFRhV24?feature=share", description: "A timeless silhouette refined for the modern professional. The Classic Two-Piece is the cornerstone of any distinguished wardrobe — built to carry you through boardrooms, celebrations, and everything in between.", features: ["Full canvas construction", "Pick stitching on lapels", "Working buttonholes", "Surgeon's cuffs"], care: "Dry clean only. Store on a wide-shouldered hanger." },
+  { id: 2, name: "The Executive Three-Piece", type: "suit", base_price: 22000, images: ["https://i.pinimg.com/originals/5d/83/10/5d8310ab5a0d2049fa60d7f20d56500a.jpg", "https://i.etsystatic.com/21854381/r/il/1afd5c/3096574823/il_1080xN.3096574823_af4z.jpg"], video: "https://www.youtube.com/shorts/jTn1UaTQNSo?feature=share", description: "Authority, elegance, and presence — the three-piece suit is a statement of intent. The matching waistcoat adds a layer of sophistication that sets you apart before you say a word.", features: ["Matching waistcoat included", "Half-canvas construction", "Bespoke lining options", "Horn buttons"], care: "Dry clean only. Rotate with other suits." },
+  { id: 3, name: "The Director's Suit", type: "suit", base_price: 28000, images: ["https://i.pinimg.com/originals/48/d4/1c/48d41c69214fa3b8f1bd544028c96988.webp", "https://i.pinimg.com/originals/58/da/70/58da7074a95d7d0f6287fb08ad69abac.jpg"], video: null, description: "Designed for those who shape decisions. The Director's Suit commands the room with a structured shoulder and clean trouser line — a garment that works as hard as you do.", features: ["Structured shoulder", "Double-pleated trousers", "Jetted chest pocket", "AMF stitching throughout"], care: "Dry clean only. Press with a damp cloth." },
+  { id: 4, name: "The Wedding Collection", type: "suit", base_price: 35000, images: ["https://marisolexdesigns.com/wp-content/uploads/2024/10/ls-project-2-slide-2.jpg", "https://image.made-in-china.com/2f0j00MkbovHIcCPqE/Business-Wedding-Bespoke-Tailor-Suit-Made-to-Measure-Suit-Clothes-Custom-Men-Suits.jpg", "https://lamilagobespoketailors.com.au/wp-content/uploads/2022/08/adelaid-wedding-suit-tailor.png", "https://i.pinimg.com/originals/b4/a2/40/b4a2405870669876ac73211d8a0aa865.png"], video: null, description: "Your wedding day demands perfection. The Wedding Collection is crafted with extraordinary attention to detail — a garment you will cherish long after the celebration ends.", features: ["Hand-finished buttonholes", "Personalised monogram", "Peak or notch lapel", "Coordinated accessories available"], care: "Dry clean. Store in provided garment bag." },
+  { id: 5, name: "The Perfect White Shirt", type: "shirt", base_price: 3500, images: ["https://cdn.suitsupply.com/image/upload/bo_60px_solid_rgb:efefef,b_rgb:efefef,c_pad,dpr_1,w_768,h_1267,f_auto,q_auto,fl_progressive/products/shirts/default/summer/H7104_1.jpg", "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&h=1000&fit=crop"], video: null, description: "No wardrobe is complete without the perfect white shirt. Ours is cut to sit impeccably under a jacket and stand alone with equal confidence.", features: ["Mother-of-pearl buttons", "Split yoke construction", "French seams", "Gauntlet cuffs"], care: "Machine wash 30°C. Iron while damp." },
+  { id: 6, name: "The Business Essential", type: "shirt", base_price: 2800, images: ["https://images.stockcake.com/public/7/5/a/75a5e268-e964-407f-96fb-40e6cc39b7cb_large/classic-menswear-essentials-stockcake.jpg"], video: null, description: "The workhorse of the professional wardrobe. Crafted to hold its shape through back-to-back meetings and long travel days.", features: ["Wrinkle-resistant finish", "Reinforced collar", "Classic barrel cuffs", "Precise collar stays"], care: "Machine wash 30°C. Low iron." },
+  { id: 7, name: "The Linen Casual", type: "shirt", base_price: 3200, images: ["https://i.pinimg.com/originals/8e/48/96/8e4896b96e905373bc89eb303c4732a8.jpg"], video: null, description: "Ease, warmth, and effortless style. The Linen Casual moves between smart-casual and resort wear with natural grace.", features: ["Pure linen construction", "Relaxed fit available", "Coconut shell buttons", "Curved hem"], care: "Hand wash or gentle cycle. Iron while damp." },
+  { id: 8, name: "The Overcoat", type: "coat", base_price: 18000, images: ["https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=800&h=1000&fit=crop", "https://i5.walmartimages.com/seo/Njoeus-Men-s-Stylish-Double-Breasted-Long-Trench-Coat-Woolen-Blends-Winter-Long-Jacket-Warm-Overcoat_797f6ba8-506d-456c-bbe3-6c9ef7ba0c4e.a80ff091b149f00e33e684593715dded.jpeg"], video: null, description: "Winter calls for substance. The Overcoat is built from heavyweight cloth to wrap you in warmth without sacrificing an ounce of refinement.", features: ["Heavyweight outer cloth", "Fully lined in silk-blend", "Fly front fastening", "Ticket pocket"], care: "Dry clean only. Brush after each wear." },
+  { id: 9, name: "The Trench", type: "coat", base_price: 16000, images: ["https://tse4.mm.bing.net/th/id/OIP.LpQvbKiu2q3fJglWp9zViwHaHa?pid=Api&h=220&P=0"], video: null, description: "Born from British military heritage and refined for city life. The Trench transitions from rain to shine with iconic elegance.", features: ["Waterproof outer layer", "Removable storm lining", "D-ring belt", "Gun flap detail"], care: "Dry clean only. Re-wax seasonally." },
+  { id: 10, name: "Oxford Brogues", type: "shoes", base_price: 8500, images: ["https://tse2.mm.bing.net/th/id/OIP.GNoAarnWEvLzgeGKdvq7AAHaEc?pid=Api&h=220&P=0", "https://cdn.shopify.com/s/files/1/0437/7837/products/Image6_4c23455c-2e30-4ed2-bac8-d6c24b4b7d56.jpg?v=1578658167"], video: null, description: "Hand-crafted on a classic last, these brogues carry the soul of Northampton in every stitch. They will outlast trends and improve with age.", features: ["Goodyear welted sole", "Full-grain leather upper", "Leather insole", "Hand-finished edges"], care: "Polish regularly. Use cedar shoe trees." },
+  { id: 11, name: "Chelsea Boots", type: "shoes", base_price: 9500, images: ["https://assets.timberland.eu/images/t_img/f_auto,h_650,w_650,e_sharpen:60/dpr_2.0/v1713276241/TB0A2PBBEM4-ALT3/Brimfield-Mid-Chelsea-Boot-for-Women-in-Brown.png", "https://images.opumo.com/wordpress/wp-content/uploads/2022/09/2-8.jpg", "https://luxurylondon.co.uk/wp-content/uploads/2022/09/best-chelsea-boots-for-men-crockett-and-jones.jpg"], video: null, description: "The Chelsea boot is the most versatile shoe in a man's wardrobe. Ours is built to last decades and worn to look better for it.", features: ["Elastic side gussets", "Goodyear welted", "Leather lining", "Stacked leather heel"], care: "Polish with matching cream. Condition leather seasonally." },
+  { id: 12, name: "Silk Pocket Square Set", type: "accessory", base_price: 1200, images: ["https://m.media-amazon.com/images/I/81fUWpBDFeL._AC_UL1500_.jpg", "https://s.turbifycdn.com/aah/yhst-70124266589865/bold-red-royal-silk-tie-and-pocket-square-set-44.png", "https://i.pinimg.com/originals/08/27/ea/0827eaef30847439d51c99624c328540.jpg"], video: null, description: "The finishing touch that separates the dressed from the well-dressed. Each set is hand-rolled and finished with care.", features: ["100% pure silk", "Hand-rolled edges", "Set of three colourways", "Gift box included"], care: "Dry clean or hand wash cold. Press with cool iron." },
 ];
 
 const measurementSteps = [
@@ -59,6 +59,127 @@ const tierBadgeStyles = {
   premium:  'bg-white/15 text-white/80',
   luxury:   'bg-[#A88D4B]/25 text-[#A88D4B]',
 };
+
+// ── Media Gallery (images + video) ──
+function MediaGallery({ images, video }) {
+  const [activeIndex, setActiveIndex] = useState(0); // 0..images.length-1 = photo, images.length = video
+  const [videoPlaying, setVideoPlaying] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const videoRef = useRef(null);
+
+  const totalItems = images.length + (video ? 1 : 0);
+  const isVideoActive = video && activeIndex === images.length;
+
+  useEffect(() => {
+    if (!isVideoActive && videoRef.current) {
+      videoRef.current.pause();
+      setVideoPlaying(false);
+    }
+  }, [isVideoActive]);
+
+  const togglePlay = () => {
+    if (!videoRef.current) return;
+    if (videoPlaying) { videoRef.current.pause(); setVideoPlaying(false); }
+    else { videoRef.current.play().then(() => setVideoPlaying(true)).catch(() => {}); }
+  };
+
+  return (
+    <div className="lg:sticky lg:top-32">
+      {/* Main display */}
+      <div className="relative aspect-[4/5] bg-[#EBE4D8] overflow-hidden mb-3">
+        {/* Images */}
+        <AnimatePresence mode="wait">
+          {!isVideoActive && (
+            <motion.img
+              key={activeIndex}
+              src={images[activeIndex]}
+              alt="product"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="w-full h-full object-cover"
+            />
+          )}
+        </AnimatePresence>
+
+        {/* Video */}
+        {video && (
+          <div className={`absolute inset-0 transition-opacity duration-400 ${isVideoActive ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+            <video
+              ref={videoRef}
+              src={video}
+              loop
+              muted={muted}
+              playsInline
+              preload="metadata"
+              className="w-full h-full object-cover"
+              onPlay={() => setVideoPlaying(true)}
+              onPause={() => setVideoPlaying(false)}
+            />
+            {/* Video controls overlay */}
+            {isVideoActive && (
+              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                <button onClick={togglePlay}
+                  className="flex items-center gap-2 px-4 py-2 bg-black/50 backdrop-blur-sm text-white text-sm hover:bg-black/70 transition-colors"
+                >
+                  {videoPlaying ? <><Pause className="w-4 h-4" /> Pause</> : <><Play className="w-4 h-4 fill-white" /> Play</>}
+                </button>
+                <button onClick={() => setMuted(!muted)}
+                  className="p-2 bg-black/50 backdrop-blur-sm text-white hover:bg-black/70 transition-colors"
+                >
+                  {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Thumbnail nav arrows for desktop */}
+        {totalItems > 1 && (
+          <>
+            <button onClick={() => setActiveIndex(i => (i - 1 + totalItems) % totalItems)}
+              className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4 text-[#0E2A47]" />
+            </button>
+            <button onClick={() => setActiveIndex(i => (i + 1) % totalItems)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/80 hover:bg-white transition-colors"
+            >
+              <ChevronRight className="w-4 h-4 text-[#0E2A47]" />
+            </button>
+          </>
+        )}
+      </div>
+
+      {/* Thumbnail strip */}
+      {totalItems > 1 && (
+        <div className="flex gap-2 overflow-x-auto pb-1">
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveIndex(i)}
+              className={`flex-shrink-0 w-16 h-20 overflow-hidden border-2 transition-all ${activeIndex === i ? 'border-[#A88D4B]' : 'border-transparent hover:border-[#EBE4D8]'}`}
+            >
+              <img src={img} alt={`view ${i + 1}`} className="w-full h-full object-cover" />
+            </button>
+          ))}
+          {video && (
+            <button
+              onClick={() => setActiveIndex(images.length)}
+              className={`flex-shrink-0 w-16 h-20 overflow-hidden border-2 transition-all relative bg-[#0E2A47] flex items-center justify-center ${activeIndex === images.length ? 'border-[#A88D4B]' : 'border-transparent hover:border-[#EBE4D8]'}`}
+            >
+              <video src={video} muted playsInline preload="metadata" className="w-full h-full object-cover opacity-50" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Play className="w-5 h-5 fill-white text-white" />
+              </div>
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function TailorDetailsCard({ tailor }) {
   return (
@@ -241,14 +362,12 @@ export default function ProductDetail() {
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} className="min-h-screen bg-[#F5F1E8] pt-32 pb-16">
       <div className="max-w-[1200px] mx-auto px-6">
 
-        {/* ── SECTION 1: Product Details ── */}
+        {/* ── SECTION 1: Product Details with media gallery ── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
 
-          {/* Image */}
+          {/* Media Gallery */}
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
-            <div className="aspect-[4/5] bg-[#EBE4D8] overflow-hidden lg:sticky lg:top-32">
-              <img src={product.images?.[0]} alt={product.name} className="w-full h-full object-cover" />
-            </div>
+            <MediaGallery images={product.images || []} video={product.video || null} />
           </motion.div>
 
           {/* Product Info */}
@@ -260,7 +379,6 @@ export default function ProductDetail() {
               <p className="text-[#2B2B2B]/70 leading-relaxed text-base">{product.description}</p>
             </div>
 
-            {/* Features */}
             {product.features && (
               <div>
                 <h3 className="text-xs tracking-[0.3em] uppercase text-[#A88D4B] mb-4">Included Features</h3>
@@ -275,7 +393,6 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Care */}
             {product.care && (
               <div className="flex items-start gap-3 p-4 bg-white border border-[#EBE4D8]">
                 <Shield className="w-5 h-5 text-[#A88D4B] flex-shrink-0 mt-0.5" />
@@ -286,7 +403,6 @@ export default function ProductDetail() {
               </div>
             )}
 
-            {/* Trust badges */}
             <div className="grid grid-cols-3 gap-3">
               <div className="text-center p-3 bg-white border border-[#EBE4D8]">
                 <Ruler className="w-5 h-5 text-[#A88D4B] mx-auto mb-1" />
@@ -322,7 +438,6 @@ export default function ProductDetail() {
           initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
           className="max-w-2xl mx-auto"
         >
-          {/* KEY FIX: measurements block is INSIDE key={formKey} so it resets with the rest of the form */}
           <div key={formKey} className="space-y-4">
 
             {/* Tailor */}
@@ -355,7 +470,7 @@ export default function ProductDetail() {
               <Textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any specific requests..." rows={2} />
             </div>
 
-            {/* ── Measurements — inside key={formKey} ── */}
+            {/* Measurements */}
             <div className="bg-white border border-[#EBE4D8] p-6">
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-2">
@@ -409,7 +524,7 @@ export default function ProductDetail() {
               </div>
             </div>
 
-          </div>{/* end key={formKey} */}
+          </div>
         </motion.div>
 
       </div>
