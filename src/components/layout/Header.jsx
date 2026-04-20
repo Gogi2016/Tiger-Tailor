@@ -7,6 +7,7 @@ import { Menu, X, ShoppingCart } from 'lucide-react';
 const navLinks = [
   { label: 'Home', href: createPageUrl('Home') },
   { label: 'Products', href: createPageUrl('Products') },
+  { label: 'Tailors',  href: createPageUrl('Tailors')  },
   { label: 'Contact', href: createPageUrl('Contact') },
 ];
 
@@ -37,10 +38,6 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleNavClick = () => {
-    setIsMobileMenuOpen(false);
-  };
-
   return (
     <>
       <motion.header
@@ -55,15 +52,51 @@ export default function Header() {
       >
         <div className="max-w-[1200px] mx-auto px-6">
           <div className="flex items-center justify-between h-20 md:h-24">
-            <Link
-              to={createPageUrl('Home')}
-              className={`font-serif text-2xl md:text-3xl tracking-tight transition-colors ${
-                isScrolled ? 'text-[#0E2A47]' : 'text-[#F5F1E8]'
-              }`}
-            >
-              Tiger Hunt
+
+            {/* ── Brand: logo + wordmark + slogan ── */}
+            <Link to={createPageUrl('Home')} className="flex items-center gap-3 group">
+              {/* SVG Logo Mark */}
+              <div className="flex-shrink-0">
+                <svg
+                  width="40" height="40" viewBox="0 0 40 40"
+                  fill="none" xmlns="http://www.w3.org/2000/svg"
+                  className="transition-transform duration-300 group-hover:scale-105"
+                >
+                  {/* Outer shield shape */}
+                  <path
+                    d="M20 2 L36 8 L36 22 C36 30 28 36.5 20 38 C12 36.5 4 30 4 22 L4 8 Z"
+                    fill={isScrolled ? '#0E2A47' : 'rgba(245,241,232,0.15)'}
+                    stroke={isScrolled ? '#A88D4B' : '#A88D4B'}
+                    strokeWidth="1.5"
+                  />
+                  {/* Tiger stripe accents */}
+                  <path d="M13 15 Q16 13 19 15 Q16 17 13 15Z" fill="#A88D4B" />
+                  <path d="M21 15 Q24 13 27 15 Q24 17 21 15Z" fill="#A88D4B" />
+                  <path d="M11 20 Q15 17 20 20 Q15 23 11 20Z" fill="#A88D4B" opacity="0.7" />
+                  <path d="M20 20 Q25 17 29 20 Q25 23 20 20Z" fill="#A88D4B" opacity="0.7" />
+                  {/* Centre scissors / needle cross */}
+                  <line x1="20" y1="10" x2="20" y2="30" stroke={isScrolled ? '#A88D4B' : '#F5F1E8'} strokeWidth="1" opacity="0.4" />
+                  <line x1="10" y1="20" x2="30" y2="20" stroke={isScrolled ? '#A88D4B' : '#F5F1E8'} strokeWidth="1" opacity="0.4" />
+                  <circle cx="20" cy="20" r="2.5" fill="#A88D4B" />
+                </svg>
+              </div>
+
+              {/* Wordmark + slogan */}
+              <div className="flex flex-col leading-none">
+                <span className={`font-serif text-2xl md:text-3xl tracking-tight transition-colors ${
+                  isScrolled ? 'text-[#0E2A47]' : 'text-[#F5F1E8]'
+                }`}>
+                  Tiger Hunt
+                </span>
+                <span className={`text-[9px] tracking-[0.28em] uppercase mt-0.5 transition-colors ${
+                  isScrolled ? 'text-[#0E2A47]' : 'text-[#F5F1E8]'
+                }`}>
+                  Gentlemen walk 
+                </span>
+              </div>
             </Link>
 
+            {/* ── Desktop nav ── */}
             <nav className="hidden md:flex items-center gap-10">
               {navLinks.map((link) => (
                 <Link
@@ -81,6 +114,7 @@ export default function Header() {
               ))}
             </nav>
 
+            {/* ── Cart + mobile toggle ── */}
             <div className="flex items-center gap-4">
               <Link
                 to={createPageUrl('Cart')}
@@ -112,6 +146,7 @@ export default function Header() {
         </div>
       </motion.header>
 
+      {/* ── Mobile menu ── */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -122,27 +157,34 @@ export default function Header() {
           >
             <div className="flex flex-col h-full p-6">
               <div className="flex items-center justify-between mb-12">
-                <span className="font-serif text-2xl text-[#0E2A47]">Tiger Hunt</span>
-                <button
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2"
-                  aria-label="Close menu"
-                >
+                <div className="flex items-center gap-3">
+                  <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 2 L36 8 L36 22 C36 30 28 36.5 20 38 C12 36.5 4 30 4 22 L4 8 Z"
+                      fill="#0E2A47" stroke="#A88D4B" strokeWidth="1.5" />
+                    <path d="M13 15 Q16 13 19 15 Q16 17 13 15Z" fill="#A88D4B" />
+                    <path d="M21 15 Q24 13 27 15 Q24 17 21 15Z" fill="#A88D4B" />
+                    <circle cx="20" cy="20" r="2.5" fill="#A88D4B" />
+                  </svg>
+                  <div className="flex flex-col leading-none">
+                    <span className="font-serif text-2xl text-[#0E2A47]">Tiger Hunt</span>
+                    <span className="text-[9px] tracking-[0.28em] uppercase text-[#A88D4B] mt-0.5">Bespoke Tailoring</span>
+                  </div>
+                </div>
+                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2" aria-label="Close menu">
                   <X className="w-6 h-6 text-[#0E2A47]" />
                 </button>
               </div>
 
               <nav className="flex flex-col gap-6">
                 {navLinks.map((link) => (
-                  <motion.div key={link.label}>
-                    <Link
-                      to={link.href}
-                      onClick={handleNavClick}
-                      className="font-serif text-3xl text-[#0E2A47] block"
-                    >
-                      {link.label}
-                    </Link>
-                  </motion.div>
+                  <Link
+                    key={link.label}
+                    to={link.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="font-serif text-3xl text-[#0E2A47] block hover:text-[#A88D4B] transition-colors"
+                  >
+                    {link.label}
+                  </Link>
                 ))}
               </nav>
             </div>

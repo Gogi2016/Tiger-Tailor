@@ -44,19 +44,30 @@ async function uploadProofToImgbb(base64DataUrl) {
   } catch { return null; }
 }
 
-async function saveOrderToSupabase({ reference, customerName, customerEmail, customerPhone, total, cartItems, proofFileName, proofUrl }) {
+async function saveOrderToSupabase({
+  reference,
+  customerName,
+  customerEmail,
+  customerPhone,
+  deliveryAddress,
+  total,
+  cartItems,
+  proofFileName,
+  proofUrl,
+}) {
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .insert({
       reference,
-      status:          'Pending Payment',
-      customer_name:   customerName,
-      customer_email:  customerEmail,
-      customer_phone:  customerPhone,
+      status:           'Pending Payment',
+      customer_name:    customerName,
+      customer_email:   customerEmail,
+      customer_phone:   customerPhone,
+      delivery_address: deliveryAddress,
       total,
-      deposit:         total * 0.5,
-      proof_file_name: proofFileName,
-      proof_url:       proofUrl,
+      deposit:          total * 0.5,
+      proof_file_name:  proofFileName,
+      proof_url:        proofUrl,
     })
     .select()
     .single();
@@ -93,10 +104,40 @@ async function saveOrderToSupabase({ reference, customerName, customerEmail, cus
   return order;
 }
 
+function formatMeasurements(m) {
+  if (!m) return '  No measurements provided';
+  const fields = [
+    ['Chest',          m.chest,          'cm'],
+    ['Waist',          m.waist,          'cm'],
+    ['Hips',           m.hips,           'cm'],
+    ['Shoulder Width', m.shoulder_width, 'cm'],
+    ['Neck',           m.neck,           'cm'],
+    ['Sleeve Length',  m.sleeve_length,  'cm'],
+    ['Jacket Length',  m.jacket_length,  'cm'],
+    ['Inseam',         m.inseam,         'cm'],
+    ['Outseam',        m.outseam,        'cm'],
+    ['Thigh',          m.thigh,          'cm'],
+    ['Height',         m.height,         'cm'],
+    ['Weight',         m.weight,         'kg'],
+    ['Posture Notes',  m.posture_notes,  ''],
+  ];
+  return fields
+    .filter(([, val]) => val !== null && val !== undefined && val !== '')
+    .map(([label, val, unit]) => `  ${(label + ':').padEnd(16)} ${val}${unit}`)
+    .join('\n');
+}
+
 export default function Checkout() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { cartItems, customerEmail, customerPhone, customerName, total } = location.state || {};
+  const {
+    cartItems,
+    customerEmail,
+    customerPhone,
+    customerName,
+    deliveryAddress,
+    total,
+  } = location.state || {};
 
   const [proofOfPayment, setProofOfPayment] = useState(null);
   const [proofFileName,  setProofFileName]  = useState('');
@@ -127,24 +168,32 @@ export default function Checkout() {
     if (!proofOfPayment) { toast.error('Please upload proof of payment'); return; }
     setIsSubmitting(true);
     try {
-      // 1. Upload proof image to get shareable link
+      // 1. Upload proof image
       let proofUrl = null;
       try { proofUrl = await uploadProofToImgbb(proofOfPayment); } catch {}
 
-      // 2. Save order to Supabase database
-      await saveOrderToSupabase({ reference, customerName, customerEmail, customerPhone, total, cartItems, proofFileName, proofUrl });
+      // 2. Save order + items to Supabase
+      await saveOrderToSupabase({
+        reference,
+        customerName,
+        customerEmail,
+        customerPhone,
+        deliveryAddress,
+        total,
+        cartItems,
+        proofFileName,
+        proofUrl,
+      });
 
       // 3. Build order details text
       const orderDetails = cartItems.map((item, i) =>
         'Item ' + (i + 1) + ': ' + item.product_name + ' (' + item.product_type + ')\n' +
-        '  Tailor      : ' + (item.customizations?.tailor  || 'Not specified') + '\n' +
-        '  Fabric      : ' + (item.customizations?.fabric  || 'Not specified') + '\n' +
-        '  Price       : ' + formatPrice(item.base_price * item.quantity) + '\n' +
-        '  Measurements: Chest '  + (item.measurements?.chest  || 'N/A') + 'cm, ' +
-                        'Waist '  + (item.measurements?.waist  || 'N/A') + 'cm, ' +
-                        'Height ' + (item.measurements?.height || 'N/A') + 'cm' +
-        (item.customizations?.notes ? '\n  Notes: ' + item.customizations.notes : '')
-      ).join('\n\n');
+        '  Tailor  : ' + (item.customizations?.tailor || 'Not specified') + '\n' +
+        '  Fabric  : ' + (item.customizations?.fabric || 'Not specified') + '\n' +
+        '  Price   : ' + formatPrice(item.base_price * item.quantity) + '\n' +
+        (item.customizations?.notes ? '  Notes   : ' + item.customizations.notes + '\n' : '') +
+        '\n  MEASUREMENTS:\n' + formatMeasurements(item.measurements)
+      ).join('\n\n──────────────────────────────\n\n');
 
       // 4. Customer confirmation email
       await sendEmail({
@@ -158,6 +207,7 @@ export default function Checkout() {
           'Your Order Details:\n──────────────────────────────\n' +
           orderDetails + '\n──────────────────────────────\n\n' +
           'Order Reference : ' + reference + '\n' +
+          'Delivery To     : ' + (deliveryAddress || 'Not provided') + '\n' +
           'Total           : ' + formatPrice(total) + '\n\n' +
           'Track your order anytime — visit our website and go to Track Order.\n' +
           'Use your reference number: ' + reference + '\n\n' +
@@ -176,9 +226,10 @@ export default function Checkout() {
           '🛎️ NEW ORDER RECEIVED\n\n' +
           'Customer : ' + customerName + '\n' +
           'Email    : ' + customerEmail + '\n' +
-          'Phone    : ' + customerPhone + '\n\n' +
-          'ORDER DETAILS\n──────────────────────────────\n' +
-          orderDetails + '\n──────────────────────────────\n\n' +
+          'Phone    : ' + customerPhone + '\n' +
+          'Address  : ' + (deliveryAddress || 'Not provided') + '\n\n' +
+          'ORDER DETAILS\n══════════════════════════════\n' +
+          orderDetails + '\n══════════════════════════════\n\n' +
           'Reference : ' + reference + '\n' +
           'Total     : ' + formatPrice(total) + '\n' +
           'Deposit   : ' + formatPrice(total * 0.5) + '\n' +
@@ -210,12 +261,17 @@ export default function Checkout() {
   if (orderComplete) {
     return (
       <div className="min-h-screen bg-[#F5F1E8] pt-32 pb-16 flex items-center justify-center">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.5 }}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
           className="bg-white border border-[#EBE4D8] p-12 max-w-md w-full text-center mx-6"
         >
           <PackageCheck className="w-16 h-16 text-[#A88D4B] mx-auto mb-6" />
           <h2 className="font-serif text-3xl text-[#0E2A47] mb-4">Order Placed!</h2>
-          <p className="text-[#2B2B2B]/70 mb-3">Thank you, <strong>{customerName}</strong>. Your order has been received.</p>
+          <p className="text-[#2B2B2B]/70 mb-3">
+            Thank you, <strong>{customerName}</strong>. Your order has been received.
+          </p>
           <p className="text-sm text-[#2B2B2B]/60 mb-4">
             Reference: <strong>{reference}</strong><br /><br />
             A confirmation has been sent to <strong>{customerEmail}</strong>.<br />
@@ -230,11 +286,26 @@ export default function Checkout() {
   return (
     <div className="min-h-screen bg-[#F5F1E8] pt-32 pb-16">
       <div className="max-w-[800px] mx-auto px-6">
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
           <h1 className="font-serif text-4xl md:text-5xl text-[#0E2A47] mb-4">Complete Payment</h1>
-          <p className="text-[#2B2B2B]/70 mb-12">Transfer the amount below to our bank account, then upload your proof of payment.</p>
+          <p className="text-[#2B2B2B]/70 mb-12">
+            Transfer the amount below to our bank account, then upload your proof of payment.
+          </p>
 
           <div className="space-y-6">
+            {/* Delivery address confirmation */}
+            {deliveryAddress && (
+              <div className="bg-white border border-[#EBE4D8] p-6">
+                <h2 className="font-serif text-xl text-[#0E2A47] mb-3">Delivering To</h2>
+                <p className="text-sm text-[#2B2B2B]/70 whitespace-pre-line">{deliveryAddress}</p>
+              </div>
+            )}
+
+            {/* Bank details */}
             <div className="bg-white border border-[#EBE4D8] p-8">
               <h2 className="font-serif text-2xl text-[#0E2A47] mb-6">Bank Details</h2>
               <div className="space-y-4">
@@ -262,16 +333,27 @@ export default function Checkout() {
               </div>
             </div>
 
+            {/* Proof upload */}
             <div className="bg-white border border-[#EBE4D8] p-8">
               <h2 className="font-serif text-2xl text-[#0E2A47] mb-6">Upload Proof of Payment</h2>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="proof" className="text-[#0E2A47] mb-2 block">Upload your payment slip or screenshot *</Label>
-                  <Input id="proof" type="file" onChange={handleFileChange} accept="image/*,.pdf" className="border-[#EBE4D8]" disabled={isUploading} />
+                  <Label htmlFor="proof" className="text-[#0E2A47] mb-2 block">
+                    Upload your payment slip or screenshot *
+                  </Label>
+                  <Input
+                    id="proof"
+                    type="file"
+                    onChange={handleFileChange}
+                    accept="image/*,.pdf"
+                    className="border-[#EBE4D8]"
+                    disabled={isUploading}
+                  />
                   {isUploading && <p className="text-sm text-[#A88D4B] mt-2">Reading file…</p>}
                   {proofOfPayment && !isUploading && (
                     <div className="flex items-center gap-2 mt-2 text-sm text-green-600">
-                      <CheckCircle className="w-4 h-4" /><span>{proofFileName} — ready to submit</span>
+                      <CheckCircle className="w-4 h-4" />
+                      <span>{proofFileName} — ready to submit</span>
                     </div>
                   )}
                 </div>
@@ -284,7 +366,9 @@ export default function Checkout() {
                     ? <><span className="animate-spin inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full mr-2" />Sending Order…</>
                     : <>Complete Order <Upload className="w-5 h-5" /></>}
                 </Button>
-                <p className="text-xs text-[#2B2B2B]/50 text-center">Your order will be processed once we verify your payment</p>
+                <p className="text-xs text-[#2B2B2B]/50 text-center">
+                  Your order will be processed once we verify your payment
+                </p>
               </div>
             </div>
           </div>

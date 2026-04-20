@@ -5,20 +5,18 @@ import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
 import { Trash2, ShoppingBag, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Cart() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
   const [customerEmail, setCustomerEmail] = useState('');
   const [customerPhone, setCustomerPhone] = useState('');
   const [customerName, setCustomerName] = useState('');
+  const [deliveryAddress, setDeliveryAddress] = useState('');
 
   const [cartItems, setCartItems] = useState([]);
-const isLoading = false;
+  const isLoading = false;
 
 useEffect(() => {
   const storedCart = JSON.parse(localStorage.getItem('cart') || '[]');
@@ -33,8 +31,8 @@ const deleteItem = (id) => {
 };
 
   const handleCheckout = () => {
-    if (!customerEmail || !customerPhone || !customerName) {
-      toast.error('Please fill in your contact details');
+    if (!customerEmail || !customerPhone || !customerName || !deliveryAddress) {
+      toast.error('Please fill in all required fields including delivery address');
       return;
     }
 
@@ -44,6 +42,7 @@ const deleteItem = (id) => {
         customerEmail,
         customerPhone,
         customerName,
+        deliveryAddress,
         total
       }
     });
@@ -200,6 +199,17 @@ const deleteItem = (id) => {
                       onChange={(e) => setCustomerPhone(e.target.value)}
                       placeholder="+27 123 456 789"
                       className="border-[#EBE4D8]"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="address" className="text-[#0E2A47]">Delivery Address *</Label>
+                    <textarea
+                      id="address"
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      placeholder={"Street & number\nSuburb\nCity\nPostal Code"}
+                      rows={4}
+                      className="w-full mt-1 border border-[#EBE4D8] text-sm text-[#0E2A47] p-2 resize-none focus:outline-none focus:border-[#A88D4B] placeholder:text-[#2B2B2B]/30"
                     />
                   </div>
                 </div>
